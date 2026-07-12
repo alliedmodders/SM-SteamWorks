@@ -102,16 +102,8 @@ jobs:
           if-no-files-found: error
 
   compile-plugins:
-    name: compile-plugins-sm${{ matrix.sm.label }}
+    name: compile-plugins
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        sm:
-          - label: "1.12"
-            branch: "1.12-dev"
-          - label: "1.13"
-            branch: "master"
 
     steps:
       - name: Checkout
@@ -119,7 +111,10 @@ jobs:
 
       - name: Clone SourceMod includes
         run: |
-          git clone --depth 1 -b ${{ matrix.sm.branch }} https://github.com/alliedmodders/sourcemod.git sourcemod
+          # The spcomp container only ever bundles one compiler build (tracking
+          # sourcepawn's master), so compile against SourceMod's master includes
+          # to match it — older branches' includes assume their own era's compiler.
+          git clone --depth 1 https://github.com/alliedmodders/sourcemod.git sourcemod
 
       - name: Compile Pawn plugins
         run: |
