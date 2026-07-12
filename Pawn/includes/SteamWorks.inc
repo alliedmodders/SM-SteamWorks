@@ -117,7 +117,34 @@ enum EResult
 	k_EResultNeedCaptcha = 101,					// Needs to provide a valid captcha
 	k_EResultGSLTDenied = 102,					// a game server login token owned by this token's owner has been banned
 	k_EResultGSOwnerDenied = 103,				// game server owner is denied for other reason (account lock, community ban, vac ban, missing phone)
-	k_EResultInvalidItemType = 104				// the type of thing we were requested to act on is invalid
+	k_EResultInvalidItemType = 104,				// the type of thing we were requested to act on is invalid
+	k_EResultIPBanned = 105,					// the ip address has been banned from taking this action
+	k_EResultGSLTExpired = 106,					// this token has expired from disuse; can be reset for use
+	k_EResultInsufficientFunds = 107,			// user doesn't have enough wallet funds to complete the action
+	k_EResultTooManyPending = 108,				// There are too many of this thing pending already
+	k_EResultNoSiteLicensesFound = 109,			// No site licenses found
+	k_EResultWGNetworkSendExceeded = 110,		// the WG couldn't send a response because we exceeded max network send size
+	k_EResultAccountNotFriends = 111,			// the user is not mutually friends
+	k_EResultLimitedUserAccount = 112,			// the user is limited
+	k_EResultCantRemoveItem = 113,				// item can't be removed
+	k_EResultAccountDeleted = 114,				// account has been deleted
+	k_EResultExistingUserCancelledLicense = 115,	// A license for this already exists, but cancelled
+	k_EResultCommunityCooldown = 116,			// access is denied because of a community cooldown (probably from support profile data resets)
+	k_EResultNoLauncherSpecified = 117,			// No launcher was specified, but a launcher was needed to choose correct realm for operation.
+	k_EResultMustAgreeToSSA = 118,				// User must agree to china SSA or global SSA before login
+	k_EResultLauncherMigrated = 119,			// The specified launcher type is no longer supported; the user should be directed elsewhere
+	k_EResultSteamRealmMismatch = 120,			// The user's realm does not match the realm of the requested resource
+	k_EResultInvalidSignature = 121,			// signature check did not match
+	k_EResultParseFailure = 122,				// Failed to parse input
+	k_EResultNoVerifiedPhone = 123,				// account does not have a verified phone number
+	k_EResultInsufficientBattery = 124,			// user device doesn't have enough battery charge currently to complete the action
+	k_EResultChargerRequired = 125,				// The operation requires a charger to be plugged in, which wasn't present
+	k_EResultCachedCredentialInvalid = 126,		// Cached credential was invalid - user must reauthenticate
+	K_EResultPhoneNumberIsVOIP = 127,			// The phone number provided is a Voice Over IP number
+	k_EResultNotSupported = 128,				// The data being accessed is not supported by this API
+	k_EResultFamilySizeLimitExceeded = 129,		// Reached the maximum size of the family
+	k_EResultOfflineAppCacheInvalid = 130,		// The local data for the offline mode cache is insufficient to login
+	k_EResultTryLater = 131						// retry the operation later
 };
 
 /* This enum is used in client API methods, do not re-number existing values. */
@@ -169,6 +196,7 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode305UseProxy =				305,
 	//k_EHTTPStatusCode306Unused =				306, (used in old HTTP spec, now unused in 1.1)
 	k_EHTTPStatusCode307TemporaryRedirect =		307,
+	k_EHTTPStatusCode308PermanentRedirect =		308,
 
 	// Error codes
 	k_EHTTPStatusCode400BadRequest =			400,
@@ -190,7 +218,17 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode416RequestedRangeNotSatisfiable = 416,
 	k_EHTTPStatusCode417ExpectationFailed =		417,
 	k_EHTTPStatusCode4xxUnknown = 				418, // 418 is reserved, so we'll use it to mean unknown
+	k_EHTTPStatusCode421MisdirectedRequest =	421,
+	k_EHTTPStatusCode422UnprocessableContent =	422,
+	k_EHTTPStatusCode423Locked =				423,
+	k_EHTTPStatusCode424FailedDependency =		424,
+	k_EHTTPStatusCode425TooEarly =				425,
+	k_EHTTPStatusCode426UpgradeRequired =		426,
+	k_EHTTPStatusCode428PreconditionRequired =	428,
 	k_EHTTPStatusCode429TooManyRequests	=		429,
+	k_EHTTPStatusCode431RequestHeaderFieldsTooLarge =	431,
+	k_EHTTPStatusCode444ConnectionClosed =		444, // nginx only?
+	k_EHTTPStatusCode451UnavailableForLegalReasons =	451,
 
 	// Server error codes
 	k_EHTTPStatusCode500InternalServerError =	500,
@@ -199,8 +237,18 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode503ServiceUnavailable =	503,
 	k_EHTTPStatusCode504GatewayTimeout =		504,
 	k_EHTTPStatusCode505HTTPVersionNotSupported = 505,
+	k_EHTTPStatusCode506VariantAlsoNegotiates =	506,
+	k_EHTTPStatusCode507InsufficientStorage =	507,
+	k_EHTTPStatusCode508LoopDetected =			508,
+	k_EHTTPStatusCode510NotExtended =			510,
+	k_EHTTPStatusCode511NetworkAuthenticationRequired =	511,
 	k_EHTTPStatusCode5xxUnknown =				599,
 };
+
+stock bool IsHTTPStatusSuccess(EHTTPStatusCode eStatusCode)
+{
+	return (eStatusCode >= k_EHTTPStatusCode200OK && eStatusCode < k_EHTTPStatusCode300MultipleChoices);
+}
 
 /* list of possible return values from the ISteamGameCoordinator API */
 enum EGCResults
