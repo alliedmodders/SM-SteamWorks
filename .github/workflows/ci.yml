@@ -101,6 +101,41 @@ jobs:
           path: build/package/addons
           if-no-files-found: error
 
+  compile-plugins:
+    name: compile-plugins-sm${{ matrix.sm.label }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sm:
+          - label: "1.12"
+            branch: "1.12-dev"
+          - label: "1.13"
+            branch: "master"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Clone SourceMod includes
+        run: |
+          git clone --depth 1 -b ${{ matrix.sm.branch }} https://github.com/alliedmodders/sourcemod.git sourcemod
+
+      - name: Compile Pawn plugins
+        run: |
+          mkdir -p compiled
+          status=0
+          for f in Pawn/*.sp; do
+            echo "::group::${f}"
+            docker run --rm -v "${{ github.workspace }}:/work" -w /work \
+              ghcr.io/alliedmodders/sourcemod-spcomp:master \
+              -i Pawn/includes -i sourcemod/plugins/include \
+              "${f}" -o "compiled/$(basename "${f%.sp}.smx")" \
+              || status=1
+            echo "::endgroup::"
+          done
+          exit "${status}"
+
   release:
     name: Release
     needs: build
