@@ -706,6 +706,35 @@ static sp_nativeinfo_t httpnatives[] = {
 	{"SteamWorks_WriteHTTPResponseBodyToFile",				sm_WriteHTTPResponseBodyToFile},
 	{"SteamWorks_SendHTTPRequestAndStreamResponse",			sm_SendHTTPRequestAndStreamResponse},
 	{"SteamWorks_GetHTTPStreamingResponseBodyData",			sm_GetHTTPStreamingResponseBodyData},
+
+	/* SteamWorksHTTPRequest methodmap. These reuse the functions above; the implicit
+	   `this` handle arrives as params[1], exactly like the hHandle/hRequest first
+	   parameter of the free-function natives (and the constructor maps to the create
+	   native, whose first argument is likewise params[1]). */
+	{"SteamWorksHTTPRequest.SteamWorksHTTPRequest",			sm_CreateHTTPRequest},
+	{"SteamWorksHTTPRequest.SetContextValue",				sm_SetHTTPRequestContextValue},
+	{"SteamWorksHTTPRequest.SetNetworkActivityTimeout",		sm_SetHTTPRequestNetworkActivityTimeout},
+	{"SteamWorksHTTPRequest.SetHeaderValue",				sm_SetHTTPRequestHeaderValue},
+	{"SteamWorksHTTPRequest.SetGetOrPostParameter",			sm_SetHTTPRequestGetOrPostParameter},
+	{"SteamWorksHTTPRequest.SetUserAgentInfo",				sm_SetHTTPRequestUserAgentInfo},
+	{"SteamWorksHTTPRequest.SetRequiresVerifiedCertificate",	sm_SetHTTPRequestRequiresVerifiedCertificate},
+	{"SteamWorksHTTPRequest.SetAbsoluteTimeoutMS",			sm_SetHTTPRequestAbsoluteTimeoutMS},
+	{"SteamWorksHTTPRequest.SetCallbacks",					sm_SetCallbacks},
+	{"SteamWorksHTTPRequest.Send",							sm_SendHTTPRequest},
+	{"SteamWorksHTTPRequest.SendAndStreamResponse",			sm_SendHTTPRequestAndStreamResponse},
+	{"SteamWorksHTTPRequest.Defer",							sm_DeferHTTPRequest},
+	{"SteamWorksHTTPRequest.Prioritize",					sm_PrioritizeHTTPRequest},
+	{"SteamWorksHTTPRequest.GetResponseHeaderSize",			sm_GetHTTPResponseHeaderSize},
+	{"SteamWorksHTTPRequest.GetResponseHeaderValue",		sm_GetHTTPResponseHeaderValue},
+	{"SteamWorksHTTPRequest.GetResponseBodySize",			sm_GetHTTPResponseBodySize},
+	{"SteamWorksHTTPRequest.GetResponseBodyData",			sm_GetHTTPResponseBodyData},
+	{"SteamWorksHTTPRequest.GetStreamingResponseBodyData",	sm_GetHTTPStreamingResponseBodyData},
+	{"SteamWorksHTTPRequest.GetDownloadProgressPct",		sm_GetHTTPDownloadProgressPct},
+	{"SteamWorksHTTPRequest.GetWasTimedOut",				sm_GetHTTPRequestWasTimedOut},
+	{"SteamWorksHTTPRequest.SetRawPostBody",				sm_SetHTTPRequestRawPostBody},
+	{"SteamWorksHTTPRequest.SetRawPostBodyFromFile",		sm_SetHTTPRequestRawPostBodyFromFile},
+	{"SteamWorksHTTPRequest.GetResponseBodyCallback",		sm_GetHTTPResponseBodyCallback},
+	{"SteamWorksHTTPRequest.WriteResponseBodyToFile",		sm_WriteHTTPResponseBodyToFile},
 	{NULL,											NULL}
 };
 

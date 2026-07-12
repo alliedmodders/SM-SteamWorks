@@ -816,6 +816,253 @@ native bool SteamWorks_GetHTTPResponseBodyCallback(Handle hRequest, SteamWorksHT
  */
 native bool SteamWorks_WriteHTTPResponseBodyToFile(Handle hRequest, const char[] sFileName);
 
+methodmap SteamWorksHTTPRequest < Handle
+{
+	/**
+	 * Creates a new HTTP request.
+	 *
+	 * @param method        HTTP method to use.
+	 * @param sURL          Absolute URL for the request.
+	 * @return              A new request handle, or INVALID_HANDLE on failure (including when
+	 *                      not connected to Steam).
+	 */
+	public native SteamWorksHTTPRequest(EHTTPMethod method, const char[] sURL);
+
+	/**
+	 * Sets one or two context values that will be passed back to the request's callbacks.
+	 * These let you associate arbitrary data with a request.
+	 *
+	 * @param data1         First context value.
+	 * @param data2         Second context value.
+	 * @return              True on success, false on an invalid handle or if the request was
+	 *                      already sent.
+	 */
+	public native bool SetContextValue(any data1, any data2 = 0);
+
+	/**
+	 * Sets a network-activity timeout, in seconds, for the request. Must be called before
+	 * sending. The default is 60 seconds. The timer resets whenever more data is received.
+	 *
+	 * @param timeout       Timeout in seconds.
+	 * @return              True on success, false on an invalid handle or if the request was
+	 *                      already sent.
+	 */
+	public native bool SetNetworkActivityTimeout(int timeout);
+
+	/**
+	 * Sets a request header value. Must be called before sending the request.
+	 *
+	 * @param sName         Header name.
+	 * @param sValue        Header value.
+	 * @return              True on success, false on an invalid handle or if the request was
+	 *                      already sent.
+	 */
+	public native bool SetHeaderValue(const char[] sName, const char[] sValue);
+
+	/**
+	 * Sets a GET or POST parameter on the request (which is used depends on the request
+	 * method). Must be called before sending the request.
+	 *
+	 * @param sName         Parameter name.
+	 * @param sValue        Parameter value.
+	 * @return              True on success, false on an invalid handle or if the request was
+	 *                      already sent.
+	 */
+	public native bool SetGetOrPostParameter(const char[] sName, const char[] sValue);
+
+	/**
+	 * Appends extra user-agent info to the request. This does not clobber the normal user
+	 * agent; it is added to the end.
+	 *
+	 * @param sUserAgentInfo    Extra user-agent info string.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool SetUserAgentInfo(const char[] sUserAgentInfo);
+
+	/**
+	 * Enables or disables verification of SSL/TLS certificates. By default, certificates
+	 * are verified for all HTTPS requests.
+	 *
+	 * @param bRequireVerifiedCertificate   True to require a verified certificate, false to disable.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool SetRequiresVerifiedCertificate(bool bRequireVerifiedCertificate);
+
+	/**
+	 * Sets an absolute timeout, in milliseconds, on the request. Unlike the network-activity
+	 * timeout, this is a total time limit that does not reset as data arrives.
+	 *
+	 * @param unMilliseconds    Total timeout in milliseconds.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool SetAbsoluteTimeoutMS(int unMilliseconds);
+
+	/**
+	 * Sets the callbacks fired for a request. Must be called before sending the request.
+	 * The completion callback is used by both regular and streaming requests; the headers
+	 * and data callbacks are only fired for streaming requests.
+	 *
+	 * @param fCompleted    Callback fired when the request completes, or INVALID_FUNCTION.
+	 * @param fHeaders      Callback fired when streaming headers arrive, or INVALID_FUNCTION.
+	 * @param fData         Callback fired when a streaming data chunk arrives, or INVALID_FUNCTION.
+	 * @param hCalling      Handle of the plugin that owns the callbacks, or INVALID_HANDLE for
+	 *                      the calling plugin.
+	 * @return              True on success, false on an invalid handle.
+	 * @error               Invalid plugin handle or invalid function.
+	 */
+	public native bool SetCallbacks(SteamWorksHTTPRequestCompleted fCompleted = INVALID_FUNCTION, SteamWorksHTTPHeadersReceived fHeaders = INVALID_FUNCTION, SteamWorksHTTPDataReceived fData = INVALID_FUNCTION, Handle hCalling = INVALID_HANDLE);
+
+	/**
+	 * Sends an HTTP request. The result is delivered asynchronously to the completion
+	 * callback set with SetCallbacks.
+	 *
+	 * @return              True if the request was sent, false on an invalid handle.
+	 */
+	public native bool Send();
+
+	/**
+	 * Sends an HTTP request and streams the response. Headers and data are delivered
+	 * asynchronously to the callbacks set with SetCallbacks.
+	 *
+	 * @return              True if the request was sent, false on an invalid handle.
+	 */
+	public native bool SendAndStreamResponse();
+
+	/**
+	 * Moves an already-sent request to the tail of the client's request queue.
+	 *
+	 * @return              True on success, false on an invalid handle or if the request has
+	 *                      not been sent.
+	 */
+	public native bool Defer();
+
+	/**
+	 * Moves an already-sent request to the head of the client's request queue.
+	 *
+	 * @return              True on success, false on an invalid handle or if the request has
+	 *                      not been sent.
+	 */
+	public native bool Prioritize();
+
+	/**
+	 * Checks whether a response header is present and retrieves the size of its value, so a
+	 * correctly-sized buffer can be allocated for GetResponseHeaderValue. Call from the
+	 * completion callback.
+	 *
+	 * @param sHeader       Header name.
+	 * @param size          Variable to store the header value size in.
+	 * @return              True if the header is present, false otherwise.
+	 */
+	public native bool GetResponseHeaderSize(const char[] sHeader, int &size);
+
+	/**
+	 * Retrieves a response header value. Call from the completion callback. Use
+	 * GetResponseHeaderSize first to size the buffer.
+	 *
+	 * @param sHeader       Header name.
+	 * @param sValue        Buffer to store the header value in.
+	 * @param size          Maximum length of the buffer.
+	 * @return              True on success, false if the header is not present or the buffer
+	 *                      is too small.
+	 */
+	public native bool GetResponseHeaderValue(const char[] sHeader, char[] sValue, int size);
+
+	/**
+	 * Retrieves the size of the response body. Call from the completion callback.
+	 *
+	 * @param size          Variable to store the body size in.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool GetResponseBodySize(int &size);
+
+	/**
+	 * Retrieves the response body. Call from the completion callback. Use GetResponseBodySize
+	 * first to size the buffer. Not valid for streaming responses.
+	 *
+	 * @param sBody         Buffer to store the body in.
+	 * @param length        Length of the buffer, which must match the body size.
+	 * @return              True on success, false on an invalid handle, a streaming response,
+	 *                      or an incorrectly-sized buffer.
+	 */
+	public native bool GetResponseBodyData(char[] sBody, int length);
+
+	/**
+	 * Retrieves a chunk of a streaming response body. Call from the data-received callback,
+	 * passing the offset and length reported by that callback.
+	 *
+	 * @param cOffset       Offset of the chunk, as provided by the data-received callback.
+	 * @param sBody         Buffer to store the chunk in.
+	 * @param length        Length of the chunk, as provided by the data-received callback.
+	 * @return              True on success, false on an invalid handle, a non-streaming
+	 *                      response, or a mismatched offset/length.
+	 */
+	public native bool GetStreamingResponseBodyData(int cOffset, char[] sBody, int length);
+
+	/**
+	 * Retrieves download progress for the request. This is zero until a response header with
+	 * a content-length has been received; for responses with no content-length it stays zero.
+	 *
+	 * @param percent       Variable to store the progress percentage in.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool GetDownloadProgressPct(float &percent);
+
+	/**
+	 * Checks whether the request failed because it timed out (rather than a harder failure).
+	 *
+	 * @param bWasTimedOut  Variable to store the result in.
+	 * @return              True on success, false on an invalid handle.
+	 */
+	public native bool GetWasTimedOut(bool &bWasTimedOut);
+
+	/**
+	 * Sets a raw body for a POST request. Fails on a GET request or if GET/POST parameters
+	 * were already set. This makes the raw body the entire contents of the POST.
+	 *
+	 * @param sContentType  Value for the Content-Type header.
+	 * @param sBody         Raw body data.
+	 * @param bodylen       Length of the body, in bytes.
+	 * @return              True on success, false on failure.
+	 */
+	public native bool SetRawPostBody(const char[] sContentType, const char[] sBody, int bodylen);
+
+	/**
+	 * Sets a raw POST body read from a file (relative to the game directory). Same constraints
+	 * as SetRawPostBody.
+	 *
+	 * @param sContentType  Value for the Content-Type header.
+	 * @param sFileName     Path to the file, relative to the game directory.
+	 * @return              True on success, false on failure (e.g. an empty file).
+	 * @error               Unable to open the file for reading.
+	 */
+	public native bool SetRawPostBodyFromFile(const char[] sContentType, const char[] sFileName);
+
+	/**
+	 * Retrieves the full response body and passes it to a callback. Useful for bodies larger
+	 * than a single fixed buffer. Call from the completion callback.
+	 *
+	 * @param fCallback     Callback that receives the body.
+	 * @param data          Context value passed through to the callback.
+	 * @param hPlugin       Handle of the plugin that owns the callback, or INVALID_HANDLE for
+	 *                      the calling plugin.
+	 * @return              True on success, false on an invalid handle or if the body could not
+	 *                      be retrieved.
+	 * @error               Invalid plugin handle or invalid function.
+	 */
+	public native bool GetResponseBodyCallback(SteamWorksHTTPBodyCallback fCallback, any data = 0, Handle hPlugin = INVALID_HANDLE);
+
+	/**
+	 * Writes the full response body to a file (relative to the game directory). Call from the
+	 * completion callback.
+	 *
+	 * @param sFileName     Path to the output file, relative to the game directory.
+	 * @return              True on success, false on an invalid handle or if the body could not
+	 *                      be retrieved.
+	 * @error               Unable to open the file for writing.
+	 */
+	public native bool WriteResponseBodyToFile(const char[] sFileName);
+};
+
 /**
  * Deprecated alias for SteamWorks_OnValidateClient, kept for backwards compatibility.
  * Use SteamWorks_OnValidateClient in new code.
@@ -991,5 +1238,30 @@ public void __ext_SteamWorks_SetNTVOptional()
 
 	MarkNativeAsOptional("SteamWorks_GetHTTPResponseBodyCallback");
 	MarkNativeAsOptional("SteamWorks_WriteHTTPResponseBodyToFile");
+
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SteamWorksHTTPRequest");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetContextValue");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetNetworkActivityTimeout");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetHeaderValue");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetGetOrPostParameter");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetUserAgentInfo");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetRequiresVerifiedCertificate");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetAbsoluteTimeoutMS");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetCallbacks");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.Send");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SendAndStreamResponse");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.Defer");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.Prioritize");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetResponseHeaderSize");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetResponseHeaderValue");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetResponseBodySize");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetResponseBodyData");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetStreamingResponseBodyData");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetDownloadProgressPct");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetWasTimedOut");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetRawPostBody");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.SetRawPostBodyFromFile");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.GetResponseBodyCallback");
+	MarkNativeAsOptional("SteamWorksHTTPRequest.WriteResponseBodyToFile");
 }
 #endif
