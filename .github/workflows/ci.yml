@@ -110,10 +110,8 @@ jobs:
         sm:
           - label: "1.12"
             branch: "1.12-dev"
-            image_tag: "1.12-dev"
           - label: "1.13"
             branch: "master"
-            image_tag: "master"
 
     steps:
       - name: Checkout
@@ -130,7 +128,7 @@ jobs:
           for f in Pawn/*.sp; do
             echo "::group::${f}"
             docker run --rm -v "${{ github.workspace }}:/work" -w /work \
-              ghcr.io/alliedmodders/sourcemod-spcomp:${{ matrix.sm.image_tag }} \
+              ghcr.io/alliedmodders/sourcemod-spcomp:${{ matrix.sm.branch }} \
               -i Pawn/includes -i sourcemod/plugins/include \
               "${f}" -o "compiled/$(basename "${f%.sp}.smx")" \
               || status=1
