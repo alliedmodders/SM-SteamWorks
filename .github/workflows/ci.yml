@@ -127,8 +127,12 @@ jobs:
           status=0
           for f in Pawn/*.sp; do
             echo "::group::${f}"
+            # The published image's declared entrypoint (/usr/local/bin/spcomp) doesn't
+            # match where the binary actually lives, so locate it ourselves.
             docker run --rm -v "${{ github.workspace }}:/work" -w /work \
+              --entrypoint /bin/sh \
               ghcr.io/alliedmodders/sourcemod-spcomp:master \
+              -c 'spcomp=$(find /usr/local/bin -maxdepth 2 -name spcomp -type f | head -n1); exec "$spcomp" "$@"' sh \
               -i Pawn/includes -i sourcemod/plugins/include \
               "${f}" -o "compiled/$(basename "${f%.sp}.smx")" \
               || status=1
