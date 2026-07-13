@@ -17,9 +17,10 @@
 */
 
 #pragma once
-#include "smsdk_ext.h"
-#include "steam_gameserver.h"
-#include "CDetour/detours.h"
+
+#include <CDetour/detours.h>
+
+class CDetour;
 
 /* SourceMod's safetyhook-based CDetour doesn't ship the "fixed address" helper the
    old vendored copy had, so define it in terms of the address overload it does expose. */
@@ -37,5 +38,3 @@ class SteamWorksGSDetours
 		CDetour *m_pSafeInitDetour;
 		CDetour *m_pShutdownDetour;
 };
-
-#include "extension.h"

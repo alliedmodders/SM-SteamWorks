@@ -16,7 +16,7 @@
 	Author: Kyle Sanderson (KyleS).
 */
 #include "swmemutils.h"
-#include "am-utility.h"
+#include <am-utility.h>
 
 void *SteamWorksMemUtils::ResolveSymbolInt(void *pBase, const char *pSymbol)
 {

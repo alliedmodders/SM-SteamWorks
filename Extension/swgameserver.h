@@ -17,9 +17,10 @@
 */
 
 #pragma once
-#include "smsdk_ext.h"
-#include "steam_gameserver.h"
-#include "isteamgamecoordinator.h"
+
+#include <steam_api_common.h>
+
+class ISteamGameCoordinator;
 
 #if defined(STEAM_API_INTERNAL_H) || !defined(STEAM_API_EXPORTS)
 	S_API ISteamClient *g_pSteamClientGameServer; /* This is awful. */
@@ -57,5 +58,3 @@ class SteamWorksGameServer
 		ISteamGameCoordinator *m_pGC;
 		bool loaded;
 };
-
-#include "extension.h"

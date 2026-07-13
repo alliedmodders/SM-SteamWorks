@@ -17,7 +17,11 @@
 */
 
 #pragma once
-#include "smsdk_ext.h"
+
+namespace SourceMod
+{
+	class IGameConfig;
+}
 
 class SteamWorksGameData
 {
@@ -27,10 +31,8 @@ class SteamWorksGameData
 
 	public:
 		bool HasGameData(void) const;
-		IGameConfig *GetGameData(void) const;
+		SourceMod::IGameConfig *GetGameData(void) const;
 
 	private:
-		IGameConfig *pGameConf;
+		SourceMod::IGameConfig *pGameConf;
 };
-
-#include "extension.h"

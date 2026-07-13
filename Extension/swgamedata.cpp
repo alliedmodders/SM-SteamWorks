@@ -15,7 +15,9 @@
 	
 	Author: Kyle Sanderson (KyleS).
 */
+
 #include "swgamedata.h"
+#include <smsdk_ext.h>
 
 SteamWorksGameData::SteamWorksGameData()
 {

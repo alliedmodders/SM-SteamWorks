@@ -17,10 +17,13 @@
 */
 
 #pragma once
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
-#include "smsdk_ext.h"
-#include "sourcehook.h"
+
+#include <isteamgameserver.h>
+
+namespace SourceMod 
+{ 
+	class IForward; 
+}
 
 class SteamWorksGSHooks
 {
@@ -38,12 +41,10 @@ class SteamWorksGSHooks
 		EBeginAuthSessionResult BeginAuthSession(const void*, int, CSteamID);
 		
 	private:
-		IForward *pFORR; /* On Restart Requested. */
-		IForward *pFOTR; /* On Token Requested. */
-		IForward *pOBAS; /* On Begin Auth Session. */
+		SourceMod::IForward *pFORR; /* On Restart Requested. */
+		SourceMod::IForward *pFOTR; /* On Token Requested. */
+		SourceMod::IForward *pOBAS; /* On Begin Auth Session. */
 		unsigned char uHooked;
 };
 
 void OurGameFrameHook(bool simulating);
-
-#include "extension.h"

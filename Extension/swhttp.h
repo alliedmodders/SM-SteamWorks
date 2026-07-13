@@ -17,9 +17,8 @@
 */
 
 #pragma once
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
-#include "smsdk_ext.h"
+
+#include <smsdk_ext.h>
 
 #include <unordered_map>
 
@@ -57,6 +56,3 @@ class SteamWorksHTTP :
 		HandleType_t typeHTTP;
 		std::unordered_map<HTTPRequestHandle, SteamWorksHTTPRequest *> m_Requests;
 };
-
-#include "swhttprequest.h"
-#include "extension.h"

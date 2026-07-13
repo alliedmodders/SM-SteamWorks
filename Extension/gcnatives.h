@@ -17,14 +17,6 @@
 */
 
 #pragma once
-#include "steam_gameserver.h"
-#include "isteamgamecoordinator.h"
-
-#include "smsdk_ext.h"
-
-#ifdef _WIN32
-#undef SendMessage
-#endif
 
 class SteamWorksGCNatives
 {
@@ -32,5 +24,3 @@ class SteamWorksGCNatives
 		SteamWorksGCNatives();
 		~SteamWorksGCNatives();
 };
-
-#include "extension.h"

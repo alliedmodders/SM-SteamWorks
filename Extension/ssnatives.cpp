@@ -17,6 +17,9 @@
 */
 
 #include "ssnatives.h"
+#include "extension.h"
+#include <steam_gameserver.h>
+#include "swgameserver.h"
 
 static bool IsSteamWorksLoaded(void)
 {

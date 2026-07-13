@@ -17,6 +17,11 @@
 */
 
 #include "swgsdetours.h"
+#include "extension.h"
+#include "swgameserver.h"
+#include "swgshooks.h"
+#include "swgamedata.h"
+#include <steam_gameserver.h>
 
 DETOUR_DECL_STATIC0(SteamAPIShutdown, void)
 {

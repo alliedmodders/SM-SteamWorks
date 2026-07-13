@@ -17,6 +17,9 @@
 */
 
 #include "swhttp.h"
+#include "extension.h"
+#include "swgameserver.h"
+#include "swhttprequest.h"
 
 static ISteamHTTP *GetHTTPPointer()
 {
