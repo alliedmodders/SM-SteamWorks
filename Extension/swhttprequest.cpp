@@ -504,7 +504,7 @@ static cell_t sm_SetHTTPRequestRawPostBodyFromFile(IPluginContext *pContext, con
 	}
 
 	char *pBuffer = new char[size + 1];
-	uint32_t itemsRead = fread(pBuffer, sizeof(char), size, pInputFile);
+	size_t itemsRead = fread(pBuffer, sizeof(char), size, pInputFile);
 	fclose(pInputFile);
 
 	if (itemsRead != size)
