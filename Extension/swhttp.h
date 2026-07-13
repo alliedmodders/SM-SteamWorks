@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <steam_gameserver.h>
+#include <isteamhttp.h>
 #include <smsdk_ext.h>
 
 #include <unordered_map>
