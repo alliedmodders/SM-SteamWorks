@@ -1195,8 +1195,9 @@ forward EGCResults SteamWorks_GCRetrieveMessage(int punMsgType, const char[] pub
  *
  * @param authid    32-bit account ID of the user whose stats were requested.
  * @param result       EResult code; k_EResultOK (1) indicates success.
+ * @param gameid        Game ID (AppID) of the game the stats were requested for.
  */
-forward void SteamWorks_OnUserStatsReceived(int authid, EResult result);
+forward void SteamWorks_OnUserStatsReceived(int authid, EResult result, int gameid);
 
 public Extension __ext_SteamWorks =
 {
