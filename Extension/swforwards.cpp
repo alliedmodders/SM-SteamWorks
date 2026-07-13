@@ -38,7 +38,7 @@ SteamWorksForwards::SteamWorksForwards() :
 	this->pFOSSD = forwards->CreateForward("SteamWorks_SteamServersDisconnected", ET_Ignore, 1, NULL, Param_Cell);
 	this->pFOCGS = forwards->CreateForward("SteamWorks_OnClientGroupStatus", ET_Ignore, 4, NULL, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 
-	this->pFUserStatsReceived = forwards->CreateForward("SteamWorks_OnUserStatsReceived", ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_Cell);
+	this->pFUserStatsReceived = forwards->CreateForward("SteamWorks_OnUserStatsReceived", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
 	this->pFUserStatsUnloaded = forwards->CreateForward("SteamWorks_OnUserStatsUnloaded", ET_Ignore, 1, NULL, Param_Cell);
 	this->pFUserStatsStored = forwards->CreateForward("SteamWorks_OnUserStatsStored", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
 }
@@ -130,7 +130,7 @@ void SteamWorksForwards::OnGroupStatusResult(GSClientGroupStatus_t *pResponse)
 	this->pFOCGS->Execute(NULL);
 }
 
-void SteamWorksForwards::OnUserStatsReceived(UserStatsReceived_t* pCallback)
+void SteamWorksForwards::OnUserStatsReceived(GSStatsReceived_t* pCallback)
 {
 	if (this->pFUserStatsReceived->GetFunctionCount() == 0)
 	{
@@ -139,8 +139,6 @@ void SteamWorksForwards::OnUserStatsReceived(UserStatsReceived_t* pCallback)
 
 	this->pFUserStatsReceived->PushCell(pCallback->m_steamIDUser.GetAccountID());
 	this->pFUserStatsReceived->PushCell(pCallback->m_eResult);
-	// m_nGameID stores AppID in lower 32 bits
-	this->pFUserStatsReceived->PushCell(static_cast<cell_t>(pCallback->m_nGameID & 0xFFFFFFFFULL));
 	this->pFUserStatsReceived->Execute(NULL);
 }
 

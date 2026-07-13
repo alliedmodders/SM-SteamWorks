@@ -44,7 +44,7 @@ class SteamWorksForwards
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnSteamServersDisconnected, SteamServersDisconnected_t, m_CallbackSteamDisconnected);
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnGroupStatusResult, GSClientGroupStatus_t, m_CallbackGroupStatus);
 
-		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
+		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsReceived, GSStatsReceived_t, m_CallbackUserStatsReceived);
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsUnloaded, GSStatsUnloaded_t, m_CallbackUserStatsUnloaded);
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsStored, GSStatsStored_t, m_CallbackUserStatsStored);
 	
