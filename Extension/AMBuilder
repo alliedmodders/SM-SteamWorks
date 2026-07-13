@@ -60,8 +60,8 @@ project.sources += [
   'swhttp.cpp',
   'swhttprequest.cpp',
   'swgchooks.cpp',
-  'sdk/smsdk_ext.cpp',
   os.path.join(SteamWorks.sm_root, 'public', 'CDetour', 'detours.cpp'),
+  os.path.join(SteamWorks.sm_root, 'public', 'smsdk_ext.cpp'),
 ]
 
 binary = SteamWorks.HL2Config(project, builder.cxx, 'SteamWorks.ext')
