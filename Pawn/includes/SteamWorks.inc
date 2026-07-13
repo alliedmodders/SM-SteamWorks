@@ -1199,6 +1199,22 @@ forward EGCResults SteamWorks_GCRetrieveMessage(int punMsgType, const char[] pub
  */
 forward void SteamWorks_OnUserStatsReceived(int authid, EResult result, int gameid);
 
+/**
+ * Called when Steam unloads user stats from the cache.
+ * After this, stats for this user are no longer available until RequestStats is called again.
+ *
+ * @param authid        32-bit account ID of the user.
+ */
+forward void SteamWorks_OnUserStatsUnloaded(int authid);
+
+/**
+ * Called when a request to store user stats has completed.
+ *
+ * @param authid        32-bit account ID of the user.
+ * @param result        EResult code; k_EResultOK (1) indicates success.
+ */
+forward void SteamWorks_OnUserStatsStored(int authid, EResult result);
+
 public Extension __ext_SteamWorks =
 {
 	name = "SteamWorks",

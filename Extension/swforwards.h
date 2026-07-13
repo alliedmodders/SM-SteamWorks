@@ -45,7 +45,9 @@ class SteamWorksForwards
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnGroupStatusResult, GSClientGroupStatus_t, m_CallbackGroupStatus);
 
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
-
+		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsUnloaded, GSStatsUnloaded_t, m_CallbackUserStatsUnloaded);
+		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnUserStatsStored, GSStatsStored_t, m_CallbackUserStatsStored);
+	
 	private:
 		SourceMod::IForward *pFOVC;	/* Forward On Validate Client */
 		SourceMod::IForward *pFOVC_Old;	/* OLD Forward On Validate Client */
@@ -55,4 +57,6 @@ class SteamWorksForwards
 		SourceMod::IForward *pFOCGS;	/* Forward On Client Group Status */
 
 		SourceMod::IForward* pFUserStatsReceived; // On User Stats Received
+		SourceMod::IForward* pFUserStatsUnloaded;
+		SourceMod::IForward* pFUserStatsStored;
 };
