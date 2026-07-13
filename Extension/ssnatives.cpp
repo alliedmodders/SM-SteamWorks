@@ -44,23 +44,27 @@ static CSteamID CreateCommonCSteamID(uint32_t authid, const cell_t *params, unsi
 static cell_t sm_RequestStatsAuthID(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-	
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
-	CSteamID checkid = CreateCommonCSteamID(params[1], params);
+	uint32_t authid = params[1];
+	CSteamID checkid = CreateCommonCSteamID(authid, params);
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for authid %u", authid);
+	}
+
 	return pStats->RequestUserStats(checkid) != k_uAPICallInvalid ? 1 : 0;
 }
 
 static cell_t sm_RequestUserStats(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
 	int client = params[1];
@@ -76,16 +80,20 @@ static cell_t sm_RequestUserStats(IPluginContext *pContext, const cell_t *params
 	}
 
 	CSteamID checkid = CreateCommonCSteamID(pPlayer, params);
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for client %d", client);
+	}
+
 	return pStats->RequestUserStats(checkid) != k_uAPICallInvalid ? 1 : 0;
 }
 
 static cell_t sm_GetStatCell(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
 	int client = params[1];
@@ -101,39 +109,62 @@ static cell_t sm_GetStatCell(IPluginContext *pContext, const cell_t *params)
 	}
 	
 	char *pName;
-	pContext->LocalToString(params[2], &pName);
+	if (pContext->LocalToString(params[2], &pName) != SP_ERROR_NONE || pName == NULL || pName[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Invalid or empty stat name");
+	}
 
-	cell_t *pValue;
-	pContext->LocalToPhysAddr(params[3], &pValue);
+	cell_t* pValue;
+	if (pContext->LocalToPhysAddr(params[3], &pValue) != SP_ERROR_NONE || pValue == NULL)
+	{
+		return pContext->ThrowNativeError("Invalid pointer for result value");
+	}
+
 	CSteamID checkid = CreateCommonCSteamID(pPlayer, params, 4, 5);
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for client %d", client);
+	}
+
 	return pStats->GetUserStat(checkid, pName, pValue) ? 1 : 0;
 }
 
 static cell_t sm_GetStatAuthIDCell(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
-	char *pName;
-	pContext->LocalToString(params[2], &pName);
+	char* pName;
+	if (pContext->LocalToString(params[2], &pName) != SP_ERROR_NONE || pName == NULL || pName[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Invalid or empty stat name");
+	}
 
-	cell_t *pValue;
-	pContext->LocalToPhysAddr(params[3], &pValue);
-	CSteamID checkid = CreateCommonCSteamID(params[1], params, 4, 5);
+	cell_t* pValue;
+	if (pContext->LocalToPhysAddr(params[3], &pValue) != SP_ERROR_NONE || pValue == NULL)
+	{
+		return pContext->ThrowNativeError("Invalid pointer for result value");
+	}
+
+	uint32_t authid = params[1];
+	CSteamID checkid = CreateCommonCSteamID(authid, params, 4, 5);
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for authid %u", authid);
+	}
+
 	return pStats->GetUserStat(checkid, pName, pValue) ? 1 : 0;
 }
 
 static cell_t sm_GetStatFloat(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
 	int client = params[1];
@@ -148,16 +179,26 @@ static cell_t sm_GetStatFloat(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Client index %d is not connected", client);
 	}
 	
-	char *pName;
-	pContext->LocalToString(params[2], &pName);
+	char* pName;
+	if (pContext->LocalToString(params[2], &pName) != SP_ERROR_NONE || pName == NULL || pName[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Invalid or empty stat name");
+	}
 
-	cell_t *pValue;
-	pContext->LocalToPhysAddr(params[3], &pValue);
+	cell_t* pValue;
+	if (pContext->LocalToPhysAddr(params[3], &pValue) != SP_ERROR_NONE || pValue == NULL)
+	{
+		return pContext->ThrowNativeError("Invalid pointer for result value");
+	}
+
 	CSteamID checkid = CreateCommonCSteamID(pPlayer, params, 4, 5);
-	
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for client %d", client);
+	}
+
 	float fValue;
 	bool bResult = pStats->GetUserStat(checkid, pName, &fValue);
-	
 	*pValue = sp_ftoc(fValue);
 	
 	return bResult ? 1 : 0;
@@ -166,22 +207,32 @@ static cell_t sm_GetStatFloat(IPluginContext *pContext, const cell_t *params)
 static cell_t sm_GetStatAuthIDFloat(IPluginContext *pContext, const cell_t *params)
 {
 	ISteamGameServerStats *pStats = GetServerStatsPointer();
-
 	if (pStats == NULL)
 	{
-		return 0;
+		return pContext->ThrowNativeError("ISteamGameServerStats interface not available");
 	}
 
-	char *pName;
-	pContext->LocalToString(params[2], &pName);
+	char* pName;
+	if (pContext->LocalToString(params[2], &pName) != SP_ERROR_NONE || pName == NULL || pName[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Invalid or empty stat name");
+	}
 
-	cell_t *pValue;
-	pContext->LocalToPhysAddr(params[3], &pValue);
-	CSteamID checkid = CreateCommonCSteamID(params[1], params, 4, 5);
+	cell_t* pValue;
+	if (pContext->LocalToPhysAddr(params[3], &pValue) != SP_ERROR_NONE || pValue == NULL)
+	{
+		return pContext->ThrowNativeError("Invalid pointer for result value");
+	}
+
+	uint32_t authid = params[1];
+	CSteamID checkid = CreateCommonCSteamID(authid, params, 4, 5);
+	if (!checkid.IsValid())
+	{
+		return pContext->ThrowNativeError("Failed to get valid SteamID for authid %u", authid);
+	}
 
 	float fValue;
 	bool bResult = pStats->GetUserStat(checkid, pName, &fValue);
-
 	*pValue = sp_ftoc(fValue);
 
 	return bResult ? 1 : 0;
