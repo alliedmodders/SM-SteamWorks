@@ -423,21 +423,19 @@ native int SteamWorks_GetClientSteamID(int client, char[] sSteamID, int length);
  * afterwards through SteamWorks_GetStatAuthIDCell / SteamWorks_GetStatAuthIDFloat.
  *
  * @param accountId     32-bit account ID of the user whose stats to request.
- * @param appid         Application (AppID) to request stats for.
  * @return              True if the request was sent, false if not connected to Steam.
  */
-native bool SteamWorks_RequestStatsAuthID(int accountId, int appid);
+native bool SteamWorks_RequestStatsAuthID(int accountId);
 
 /**
  * Asynchronously requests the stats of a client from Steam. Stats become available
  * afterwards through SteamWorks_GetStatCell / SteamWorks_GetStatFloat.
  *
  * @param client        Client index.
- * @param appid         Application (AppID) to request stats for.
  * @return              True if the request was sent, false if not connected to Steam.
  * @error               Invalid client index.
  */
-native bool SteamWorks_RequestStats(int client, int appid);
+native bool SteamWorks_RequestStats(int client);
 
 /**
  * Retrieves an integer stat for a client. The client's stats must have been
