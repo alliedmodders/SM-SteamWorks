@@ -828,6 +828,16 @@ native bool SteamWorks_GetHTTPResponseBodyCallback(Handle hRequest, SteamWorksHT
  */
 native bool SteamWorks_WriteHTTPResponseBodyToFile(Handle hRequest, const char[] sFileName);
 
+/**
+ * Checks whether the ISteamGameServerStats interface is available.
+ *
+ * This allows plugins to avoid calling stat functions when the interface is
+ * not ready, preventing native errors and allowing graceful fallback.
+ *
+ * @return              True if stats interface is available, false otherwise.
+ */
+native bool SteamWorks_IsStatsAvailable();
+
 methodmap SteamWorksHTTPRequest < Handle
 {
 	/**
@@ -1228,6 +1238,7 @@ public void __ext_SteamWorks_SetNTVOptional()
 	MarkNativeAsOptional("SteamWorks_GetStatAuthIDFloat");
 
 	MarkNativeAsOptional("SteamWorks_SendMessageToGC");
+	MarkNativeAsOptional("SteamWorks_IsStatsAvailable");
 
 	MarkNativeAsOptional("SteamWorks_CreateHTTPRequest");
 	MarkNativeAsOptional("SteamWorks_SetHTTPRequestContextValue");

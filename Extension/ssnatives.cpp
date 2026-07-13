@@ -187,12 +187,19 @@ static cell_t sm_GetStatAuthIDFloat(IPluginContext *pContext, const cell_t *para
 	return bResult ? 1 : 0;
 }
 
-static sp_nativeinfo_t ssnatives[] = {
+static cell_t sm_IsStatsAvailable(IPluginContext* pContext, const cell_t* params)
+{
+	return (GetServerStatsPointer() != NULL) ? 1 : 0;
+}
+
+static sp_nativeinfo_t ssnatives[] =
+{
+	{"SteamWorks_IsStatsAvailable",					sm_IsStatsAvailable},
 	{"SteamWorks_RequestStatsAuthID",				sm_RequestStatsAuthID},
-	{"SteamWorks_RequestStats",				sm_RequestUserStats},
-	{"SteamWorks_GetStatCell",				sm_GetStatCell},
+	{"SteamWorks_RequestStats",						sm_RequestUserStats},
+	{"SteamWorks_GetStatCell",						sm_GetStatCell},
 	{"SteamWorks_GetStatAuthIDCell",				sm_GetStatAuthIDCell},
-	{"SteamWorks_GetStatFloat",				sm_GetStatFloat},
+	{"SteamWorks_GetStatFloat",						sm_GetStatFloat},
 	{"SteamWorks_GetStatAuthIDFloat",				sm_GetStatAuthIDFloat},
 	{NULL,											NULL}
 };
