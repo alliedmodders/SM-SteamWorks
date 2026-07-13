@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "smsdk_ext.h"
 
 class SteamWorksGameData
@@ -32,5 +33,3 @@ class SteamWorksGameData
 	private:
 		IGameConfig *pGameConf;
 };
-
-#include "extension.h"

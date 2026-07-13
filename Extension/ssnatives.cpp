@@ -17,6 +17,7 @@
 */
 
 #include "ssnatives.h"
+#include "extension.h"
 
 static bool IsSteamWorksLoaded(void)
 {

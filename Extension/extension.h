@@ -52,6 +52,7 @@
 #include "gcnatives.h"
 #include "swgsdetours.h"
 #include "swhttp.h"
+#include "swhttprequest.h"
 
 /**
  * @brief Sample implementation of the SDK Extension.

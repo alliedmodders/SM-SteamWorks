@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "steam_gameserver.h"
 #include "isteamgamecoordinator.h"
 
@@ -50,5 +51,3 @@ class SteamWorksGCHooks
 };
 
 void OurGCGameFrameHook(bool simulating);
-
-#include "extension.h"

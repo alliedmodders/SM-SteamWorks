@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "isteamgameserver.h"
 #include "steam_gameserver.h"
 #include "smsdk_ext.h"

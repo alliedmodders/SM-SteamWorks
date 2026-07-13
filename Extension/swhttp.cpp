@@ -17,6 +17,7 @@
 */
 
 #include "swhttp.h"
+#include "extension.h"
 
 static ISteamHTTP *GetHTTPPointer()
 {

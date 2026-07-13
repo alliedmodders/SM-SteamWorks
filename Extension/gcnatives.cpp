@@ -17,6 +17,7 @@
 */
 
 #include "gcnatives.h"
+#include "extension.h"
 
 static ISteamGameCoordinator *GetSteamGCPointer(void)
 {

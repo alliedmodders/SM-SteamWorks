@@ -17,6 +17,7 @@
 */
 
 #include "swgsdetours.h"
+#include "extension.h"
 
 DETOUR_DECL_STATIC0(SteamAPIShutdown, void)
 {

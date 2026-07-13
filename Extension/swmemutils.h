@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "smsdk_ext.h"
 
 class SteamWorksMemUtils
@@ -25,5 +26,3 @@ class SteamWorksMemUtils
 		void *ResolveSymbolInt(void *pBase, const char *pSymbol);
 		size_t GetOffsetFromVTable(void *pInterface, void *pToFindFunc, const char *pClassSig = NULL, size_t version = 0);
 };
-
-#include "extension.h"

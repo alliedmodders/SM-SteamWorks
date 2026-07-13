@@ -17,6 +17,7 @@
 */
 
 #include "gsnatives.h"
+#include "extension.h"
 
 static bool IsSteamWorksLoaded(void)
 {

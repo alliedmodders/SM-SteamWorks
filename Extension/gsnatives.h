@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "smsdk_ext.h"
 
 class SteamWorksGSNatives
@@ -25,5 +26,3 @@ class SteamWorksGSNatives
 		SteamWorksGSNatives();
 		~SteamWorksGSNatives();
 };
-
-#include "extension.h"

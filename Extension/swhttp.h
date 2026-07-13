@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "isteamgameserver.h"
 #include "steam_gameserver.h"
 #include "smsdk_ext.h"
@@ -38,6 +39,3 @@ class SteamWorksHTTP :
 	private:
 		HandleType_t typeHTTP;
 };
-
-#include "swhttprequest.h"
-#include "extension.h"

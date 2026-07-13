@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "smsdk_ext.h"
 #include "steam_gameserver.h"
 #include "isteamgamecoordinator.h"
@@ -57,5 +58,3 @@ class SteamWorksGameServer
 		ISteamGameCoordinator *m_pGC;
 		bool loaded;
 };
-
-#include "extension.h"

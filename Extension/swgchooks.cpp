@@ -17,6 +17,7 @@
 */
 
 #include "swgchooks.h"
+#include "extension.h"
 
 enum
 {

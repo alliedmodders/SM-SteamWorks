@@ -17,6 +17,7 @@
 */
 
 #pragma once
+
 #include "steam_gameserver.h"
 #include "isteamgamecoordinator.h"
 
@@ -32,5 +33,3 @@ class SteamWorksGCNatives
 		SteamWorksGCNatives();
 		~SteamWorksGCNatives();
 };
-
-#include "extension.h"

@@ -18,6 +18,7 @@
 
 #include "swgshooks.h"
 #include "steamtools/ticket.h"
+#include "extension.h"
 
 enum
 {

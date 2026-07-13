@@ -17,6 +17,7 @@
 */
 
 #include "swgameserver.h"
+#include "extension.h"
 
 static void GetGameSpecificConfigInterface(const char *pName, const char *&pVersion)
 {
