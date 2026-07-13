@@ -18,15 +18,13 @@
 
 #pragma once
 
-#include "steam_gameserver.h"
-#include "isteamgamecoordinator.h"
+#include <isteamgamecoordinator.h>
+#include <cstdint>
 
-#include "smsdk_ext.h"
-#include "sourcehook.h"
-
-#ifdef _WIN32
-#undef SendMessage
-#endif
+namespace SourceMod
+{
+	class IForward;
+}
 
 class SteamWorksGCHooks
 {
@@ -44,9 +42,9 @@ class SteamWorksGCHooks
 		EGCResults RetrieveMessage(uint32 *punMsgType, void *pubDest, uint32 cubDest, uint32 *pcubMsgSize);
 
 	private:
-		IForward *pGCSendMsg;
-		IForward *pGCMsgAvail;
-		IForward *pGCRetMsg;
+		SourceMod::IForward *pGCSendMsg;
+		SourceMod::IForward *pGCMsgAvail;
+		SourceMod::IForward *pGCRetMsg;
 		unsigned char uHooked;
 };
 

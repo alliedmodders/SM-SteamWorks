@@ -17,8 +17,11 @@
 */
 
 #include "swgshooks.h"
-#include "steamtools/ticket.h"
 #include "extension.h"
+//#include <steamtools/ticket.h> // ????
+#include <isteamgameserver.h>
+#include <smsdk_ext.h>
+#include "swgameserver.h"
 
 enum
 {

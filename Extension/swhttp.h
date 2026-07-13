@@ -18,9 +18,7 @@
 
 #pragma once
 
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
-#include "smsdk_ext.h"
+#include <smsdk_ext.h>
 
 class SteamWorksHTTP :
 	public IHandleTypeDispatch

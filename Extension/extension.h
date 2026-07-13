@@ -37,22 +37,21 @@
  * @brief Sample extension code header.
  */
 
-#include "smsdk_ext.h"
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
+#include <smsdk_ext.h>
+#include <isteamgameserver.h>
+#include <steamclientpublic.h>
 
-#include "swgameserver.h"
-#include "swgamedata.h"
-
-#include "swforwards.h"
-#include "gsnatives.h"
-#include "swgshooks.h"
-#include "swgchooks.h"
-#include "ssnatives.h"
-#include "gcnatives.h"
-#include "swgsdetours.h"
-#include "swhttp.h"
-#include "swhttprequest.h"
+class SteamWorksForwards;
+class SteamWorksGameData;
+class SteamWorksGameServer;
+class SteamWorksGSNatives;
+class SteamWorksGSHooks;
+class SteamWorksSSNatives;
+class SteamWorksGSDetours;
+class SteamWorksHTTP;
+class SteamWorksHTTPNatives;
+class SteamWorksGCHooks;
+class SteamWorksGCNatives;
 
 /**
  * @brief Sample implementation of the SDK Extension.
@@ -150,4 +149,5 @@ public:
 };
 
 extern SteamWorks g_SteamWorks;
+
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_

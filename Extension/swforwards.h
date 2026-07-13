@@ -18,9 +18,12 @@
 
 #pragma once
 
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
-#include "smsdk_ext.h"
+#include <steam_gameserver.h>
+
+namespace SourceMod
+{
+	class IForward;
+}
 
 typedef uint32_t Account_t;
 
@@ -42,10 +45,10 @@ class SteamWorksForwards
 		STEAM_GAMESERVER_CALLBACK(SteamWorksForwards, OnGroupStatusResult, GSClientGroupStatus_t, m_CallbackGroupStatus);
 	
 	private:
-		IForward *pFOVC;	/* Forward On Validate Client */
-		IForward *pFOVC_Old;	/* OLD Forward On Validate Client */
-		IForward *pFOSSC;	/* Forward On Steam Servers Connected */
-		IForward *pFOSSCF;	/* Forward On Steam Servers Connect Failure */
-		IForward *pFOSSD;	/* Forward On Steam Servers Disconnected */
-		IForward *pFOCGS;	/* Forward On Client Group Status */
+		SourceMod::IForward *pFOVC;	/* Forward On Validate Client */
+		SourceMod::IForward *pFOVC_Old;	/* OLD Forward On Validate Client */
+		SourceMod::IForward *pFOSSC;	/* Forward On Steam Servers Connected */
+		SourceMod::IForward *pFOSSCF;	/* Forward On Steam Servers Connect Failure */
+		SourceMod::IForward *pFOSSD;	/* Forward On Steam Servers Disconnected */
+		SourceMod::IForward *pFOCGS;	/* Forward On Client Group Status */
 };

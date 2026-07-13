@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include "smsdk_ext.h"
-
 class SteamWorksSSNatives
 {
 	public:

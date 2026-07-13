@@ -18,6 +18,8 @@
 
 #include "gcnatives.h"
 #include "extension.h"
+#include "swgameserver.h"
+#include <isteamgamecoordinator.h>
 
 static ISteamGameCoordinator *GetSteamGCPointer(void)
 {

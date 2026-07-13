@@ -18,9 +18,8 @@
 
 #pragma once
 
-#include "isteamgameserver.h"
-#include "steam_gameserver.h"
-#include "smsdk_ext.h"
+#include <isteamhttp.h>
+#include <smsdk_ext.h> // HTTPRequestHandle, Handle_t, IChangeableForward
 
 class SteamWorksHTTPRequest
 {
@@ -43,9 +42,9 @@ class SteamWorksHTTPRequest
 		CCallResult<SteamWorksHTTPRequest, HTTPRequestDataReceived_t> DataCallResult;
 
 	public:
-		IChangeableForward *pCompletedForward;
-		IChangeableForward *pHeadersReceivedForward;
-		IChangeableForward *pDataReceivedForward;
+		SourceMod::IChangeableForward *pCompletedForward;
+		SourceMod::IChangeableForward *pHeadersReceivedForward;
+		SourceMod::IChangeableForward *pDataReceivedForward;
 };
 
 class SteamWorksHTTPNatives

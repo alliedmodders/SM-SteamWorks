@@ -17,6 +17,8 @@
 */
 
 #include "swforwards.h"
+#include <smsdk_ext.h>
+#include <steam_gameserver.h> 
 
 SteamWorksForwards::SteamWorksForwards() :
 		m_CallbackGSClientApprove(this, &SteamWorksForwards::OnGSClientApprove),

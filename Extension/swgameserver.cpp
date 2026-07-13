@@ -18,6 +18,18 @@
 
 #include "swgameserver.h"
 #include "extension.h"
+#include "swgamedata.h"
+
+#include <smsdk_ext.h>
+
+#include <isteamclient.h>
+#include <isteamgameserver.h>
+#include <isteamutils.h>
+#include <isteamnetworking.h>
+#include <isteamgameserverstats.h>
+#include <isteamhttp.h>
+#include <isteammatchmaking.h>
+#include <isteamgamecoordinator.h>
 
 static void GetGameSpecificConfigInterface(const char *pName, const char *&pVersion)
 {

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "smsdk_ext.h"
+//#include <cstddef>
 
 class SteamWorksMemUtils
 {

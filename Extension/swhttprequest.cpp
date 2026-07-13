@@ -17,8 +17,9 @@
 */
 
 #include "swhttprequest.h"
-#include <cstdio>
 #include "extension.h"
+#include "swgameserver.h"
+#include "swhttp.h"
 
 /* SourceMod 1.13 (extension API 9) changed IPluginManager::FindPluginByContext()
    to take an IPluginContext* directly; older SM (API 8) takes the low-level

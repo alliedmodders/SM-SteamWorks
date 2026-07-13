@@ -30,7 +30,18 @@
  */
 
 #include "extension.h"
-#include <stdlib.h>
+
+#include "swgamedata.h"
+#include "swgameserver.h"
+#include "swhttp.h"
+#include "swhttprequest.h"
+#include "swforwards.h"
+#include "gsnatives.h"
+#include "swgshooks.h"
+#include "swgsdetours.h"
+#include "ssnatives.h"
+#include "swgchooks.h"
+#include "gcnatives.h"
 
 /**
  * @file extension.cpp

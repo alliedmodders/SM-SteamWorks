@@ -18,6 +18,12 @@
 
 #include "swgchooks.h"
 #include "extension.h"
+#include "swgameserver.h"
+#include <isteamgamecoordinator.h>
+
+#ifdef _WIN32
+#undef SendMessage
+#endif
 
 enum
 {
