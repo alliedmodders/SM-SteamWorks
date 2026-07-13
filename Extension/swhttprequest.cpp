@@ -67,6 +67,14 @@ SteamWorksHTTPRequest::SteamWorksHTTPRequest() : request(INVALID_HTTPREQUEST_HAN
 
 SteamWorksHTTPRequest::~SteamWorksHTTPRequest()
 {
+	/* Requests are freed via a frame action, so on extension unload this can run
+	   after the dispatcher itself has been torn down; pSWHTTP is nulled in that
+	   case (see SDK_OnUnload), so guard against it. */
+	if (g_SteamWorks.pSWHTTP != NULL)
+	{
+		g_SteamWorks.pSWHTTP->UnregisterRequest(this);
+	}
+
 	ISteamHTTP *pHTTP = GetHTTPPointer();
 	if (pHTTP != NULL)
 	{
@@ -101,7 +109,10 @@ void SteamWorksHTTPRequest::OnHTTPRequestCompleted(HTTPRequestCompleted_t *pRequ
 	this->pCompletedForward->Execute(NULL);
 }
 
-void SteamWorksHTTPRequest::OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *pRequest, bool bFailed)
+/* Streaming header/data notifications are success-only callbacks (unlike the
+   completion call result, they carry no IO-failure flag), so bFailure is always
+   false here. Failures still surface through the completion callback. */
+void SteamWorksHTTPRequest::OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *pRequest)
 {
 	if (this->pHeadersReceivedForward == NULL || this->pHeadersReceivedForward->GetFunctionCount() == 0)
 	{
@@ -109,13 +120,13 @@ void SteamWorksHTTPRequest::OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *
 	}
 
 	this->pHeadersReceivedForward->PushCell(this->handle);
-	this->pHeadersReceivedForward->PushCell(bFailed);
+	this->pHeadersReceivedForward->PushCell(false);
 	this->pHeadersReceivedForward->PushCell(pRequest->m_ulContextValue >> 32);
 	this->pHeadersReceivedForward->PushCell((pRequest->m_ulContextValue & 0x00000000FFFFFFFF));
 	this->pHeadersReceivedForward->Execute(NULL);
 }
 
-void SteamWorksHTTPRequest::OnHTTPDataReceived(HTTPRequestDataReceived_t *pRequest, bool bFailed)
+void SteamWorksHTTPRequest::OnHTTPDataReceived(HTTPRequestDataReceived_t *pRequest)
 {
 	if (this->pDataReceivedForward == NULL || this->pDataReceivedForward->GetFunctionCount() == 0)
 	{
@@ -123,7 +134,7 @@ void SteamWorksHTTPRequest::OnHTTPDataReceived(HTTPRequestDataReceived_t *pReque
 	}
 
 	this->pDataReceivedForward->PushCell(this->handle);
-	this->pDataReceivedForward->PushCell(bFailed);
+	this->pDataReceivedForward->PushCell(false);
 	this->pDataReceivedForward->PushCell(pRequest->m_cOffset);
 	this->pDataReceivedForward->PushCell(pRequest->m_cBytesReceived);
 	this->pDataReceivedForward->PushCell(pRequest->m_ulContextValue >> 32);
@@ -159,7 +170,9 @@ static cell_t sm_CreateHTTPRequest(IPluginContext *pContext, const cell_t *param
 
 	pRequest->request = request;
 	pRequest->handle = handle;
-	
+
+	g_SteamWorks.pSWHTTP->RegisterRequest(pRequest);
+
 	return handle;
 }
 
@@ -296,22 +309,13 @@ static cell_t sm_SetCallbacks(IPluginContext *pContext, const cell_t *params)
 
 static void SetCallbacks(SteamAPICall_t &hCall, SteamWorksHTTPRequest *pRequest)
 {
+	/* Only completion is a call result of this send. Header/data streaming
+	   notifications are delivered as broadcast callbacks and routed to the request
+	   by SteamWorksHTTP's dispatcher, so there is nothing to bind to hCall here. */
 	if (pRequest->pCompletedForward != NULL)
 	{
 		pRequest->CompletedCallResult.SetGameserverFlag();
 		pRequest->CompletedCallResult.Set(hCall, pRequest, &SteamWorksHTTPRequest::OnHTTPRequestCompleted);
-	}
-
-	if (pRequest->pHeadersReceivedForward != NULL)
-	{
-		pRequest->HeadersCallResult.SetGameserverFlag();
-		pRequest->HeadersCallResult.Set(hCall, pRequest, &SteamWorksHTTPRequest::OnHTTPHeadersReceived);
-	}
-
-	if (pRequest->pDataReceivedForward != NULL)
-	{
-		pRequest->DataCallResult.SetGameserverFlag();
-		pRequest->DataCallResult.Set(hCall, pRequest, &SteamWorksHTTPRequest::OnHTTPDataReceived);
 	}
 }
 

@@ -23,7 +23,9 @@ static ISteamHTTP *GetHTTPPointer()
 	return g_SteamWorks.pSWGameServer->GetHTTP();
 }
 
-SteamWorksHTTP::SteamWorksHTTP()
+SteamWorksHTTP::SteamWorksHTTP() :
+	m_CallbackHeadersReceived(this, &SteamWorksHTTP::OnHTTPHeadersReceived),
+	m_CallbackDataReceived(this, &SteamWorksHTTP::OnHTTPDataReceived)
 {
 	this->typeHTTP = handlesys->CreateType("HTTPHandle", this, 0, NULL, NULL, myself->GetIdentity(), NULL);
 }
@@ -36,6 +38,46 @@ SteamWorksHTTP::~SteamWorksHTTP()
 HandleType_t SteamWorksHTTP::GetHTTPHandle(void)
 {
 	return this->typeHTTP;
+}
+
+void SteamWorksHTTP::RegisterRequest(SteamWorksHTTPRequest *pRequest)
+{
+	if (pRequest->request != INVALID_HTTPREQUEST_HANDLE)
+	{
+		this->m_Requests[pRequest->request] = pRequest;
+	}
+}
+
+void SteamWorksHTTP::UnregisterRequest(SteamWorksHTTPRequest *pRequest)
+{
+	if (pRequest->request != INVALID_HTTPREQUEST_HANDLE)
+	{
+		this->m_Requests.erase(pRequest->request);
+	}
+}
+
+SteamWorksHTTPRequest *SteamWorksHTTP::FindRequest(HTTPRequestHandle request)
+{
+	auto it = this->m_Requests.find(request);
+	return (it == this->m_Requests.end()) ? NULL : it->second;
+}
+
+void SteamWorksHTTP::OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *pParam)
+{
+	SteamWorksHTTPRequest *pRequest = this->FindRequest(pParam->m_hRequest);
+	if (pRequest != NULL)
+	{
+		pRequest->OnHTTPHeadersReceived(pParam);
+	}
+}
+
+void SteamWorksHTTP::OnHTTPDataReceived(HTTPRequestDataReceived_t *pParam)
+{
+	SteamWorksHTTPRequest *pRequest = this->FindRequest(pParam->m_hRequest);
+	if (pRequest != NULL)
+	{
+		pRequest->OnHTTPDataReceived(pParam);
+	}
 }
 
 static void DelayedDeleteSteamWorksHTTPRequest(void *object)

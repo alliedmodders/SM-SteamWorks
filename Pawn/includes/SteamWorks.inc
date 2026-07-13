@@ -598,7 +598,8 @@ typeset SteamWorksHTTPRequestCompleted
  * of trailing context parameters matches the context values set on the request.
  *
  * @param hRequest      HTTP request handle.
- * @param bFailure      True if the request failed due to an internal or network error.
+ * @param bFailure      Always false; headers-received is a success-only notification. A
+ *                      failed request is reported through SteamWorksHTTPRequestCompleted.
  * @param data1         First context value, if one was set.
  * @param data2         Second context value, if one was set.
  */
@@ -615,7 +616,8 @@ typeset SteamWorksHTTPHeadersReceived
  * number of trailing context parameters matches the context values set on the request.
  *
  * @param hRequest      HTTP request handle.
- * @param bFailure      True if the request failed due to an internal or network error.
+ * @param bFailure      Always false; data-received is a success-only notification. A
+ *                      failed request is reported through SteamWorksHTTPRequestCompleted.
  * @param offset        Offset of this chunk within the response body.
  * @param bytesreceived Number of bytes in this chunk.
  * @param data1         First context value, if one was set.

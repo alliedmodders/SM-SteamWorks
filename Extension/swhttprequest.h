@@ -32,14 +32,15 @@ class SteamWorksHTTPRequest
 		Handle_t handle;
 
 	public:
+		/* Completion is a genuine call result of the send API call, so it stays a
+		   CCallResult. Headers/data arrive as broadcast callbacks and are routed here
+		   by SteamWorksHTTP's dispatcher, hence no per-request CCallResult for them. */
 		void OnHTTPRequestCompleted(HTTPRequestCompleted_t *pRequest, bool bFailed);
-		void OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *pRequest, bool bFailed);
-		void OnHTTPDataReceived(HTTPRequestDataReceived_t *pRequest, bool bFailed);
+		void OnHTTPHeadersReceived(HTTPRequestHeadersReceived_t *pRequest);
+		void OnHTTPDataReceived(HTTPRequestDataReceived_t *pRequest);
 
 	public:
 		CCallResult<SteamWorksHTTPRequest, HTTPRequestCompleted_t> CompletedCallResult;
-		CCallResult<SteamWorksHTTPRequest, HTTPRequestHeadersReceived_t> HeadersCallResult;
-		CCallResult<SteamWorksHTTPRequest, HTTPRequestDataReceived_t> DataCallResult;
 
 	public:
 		IChangeableForward *pCompletedForward;

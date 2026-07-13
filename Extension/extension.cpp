@@ -72,6 +72,7 @@ void SteamWorks::SDK_OnUnload()
 	delete this->pSWHTTPNatives;
 	
 	delete this->pSWHTTP;
+	this->pSWHTTP = NULL; /* Requests freed via frame actions may outlive us; let their dtor detect this. */
 	delete this->pSWGameServer;
 	delete this->pSWGameData;
 }
