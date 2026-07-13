@@ -40,7 +40,18 @@
 /* Basic information exposed publicly */
 #define SMEXT_CONF_NAME			"SteamWorks Extension"
 #define SMEXT_CONF_DESCRIPTION	"Exposes SteamWorks functions to Developers"
-#define SMEXT_CONF_VERSION		"1.2.3"
+/* The literal below is the MAJOR.MINOR base and the version used by local builds.
+   CI turns it into a full MAJOR.MINOR.PATCH release version by defining
+   SMEXT_CONF_VERSION_OVERRIDE at build time as an unquoted token (e.g. 1.2.158,
+   where the patch is the commit count); it is stringized here so no cross-platform
+   shell quoting is required. Bump the MAJOR/MINOR here by hand. */
+#if defined(SMEXT_CONF_VERSION_OVERRIDE)
+#define SMEXT_CONF_VERSION_STR_(x)	#x
+#define SMEXT_CONF_VERSION_STR(x)	SMEXT_CONF_VERSION_STR_(x)
+#define SMEXT_CONF_VERSION			SMEXT_CONF_VERSION_STR(SMEXT_CONF_VERSION_OVERRIDE)
+#else
+#define SMEXT_CONF_VERSION		"1.2"
+#endif
 #define SMEXT_CONF_AUTHOR		"Kyle Sanderson, AlliedModders"
 #define SMEXT_CONF_URL			"https://github.com/alliedmodders/SM-SteamWorks"
 #define SMEXT_CONF_LOGTAG		"STEAMWORKS"

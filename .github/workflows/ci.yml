@@ -7,8 +7,27 @@ on:
     branches: [ master ]
 
 jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.compute.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Compute version
+        id: compute
+        run: |
+          base_version=$(grep -oP 'SMEXT_CONF_VERSION\s+"\K[^"]+' Extension/sdk/smsdk_config.h)
+          build_number=$(git rev-list --count HEAD)
+          echo "version=${base_version}.${build_number}" >> "$GITHUB_OUTPUT"
+
   build:
     name: sm${{ matrix.sm.label }}-${{ matrix.target.os_name }}-${{ matrix.target.arch }}
+    needs: version
     runs-on: ${{ matrix.target.os }}
     container: ${{ matrix.target.container }}
     strategy:
@@ -78,6 +97,7 @@ jobs:
             --mms-path ../mmsource \
             --steamworks-path ../SteamworksSDK \
             --target ${{ matrix.target.arch }} \
+            --version "${{ needs.version.outputs.version }}" \
             --enable-optimize
           ambuild
 
@@ -91,6 +111,7 @@ jobs:
             --mms-path ../mmsource \
             --steamworks-path ../SteamworksSDK \
             --target ${{ matrix.target.arch }} \
+            --version "${{ needs.version.outputs.version }}" \
             --enable-optimize
           ambuild
 
@@ -138,7 +159,7 @@ jobs:
 
   release:
     name: Release
-    needs: build
+    needs: [version, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
@@ -157,9 +178,7 @@ jobs:
       - name: Assemble packages
         id: package
         run: |
-          base_version=$(grep -oP 'SMEXT_CONF_VERSION\s+"\K[^"]+' Extension/sdk/smsdk_config.h)
-          build_number=$(git rev-list --count HEAD)
-          version="${base_version}-git${build_number}"
+          version="${{ needs.version.outputs.version }}"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
           # One package per SourceMod version per OS: Windows as .zip, Linux as

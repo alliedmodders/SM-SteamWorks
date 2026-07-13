@@ -30,4 +30,6 @@ run.options.add_argument('--enable-debug', action='store_const', const='1', dest
 run.options.add_argument('--enable-optimize', action='store_const', const='1', dest='opt',
                        help='Enable optimization')
 run.options.add_argument('--target', default=None, help='Override the default build target')
+run.options.add_argument('--version', type=str, dest='version', default=None,
+                       help='Override the version string baked into the binary (defaults to the literal in smsdk_config.h)')
 run.Configure()

@@ -69,6 +69,12 @@ binary = SteamWorks.HL2Config(project, builder.cxx, 'SteamWorks.ext')
 # The Steam API headers all come from the SteamWorks SDK; the extension is built
 # with META_NO_HL2SDK, so no HL2SDK is required.
 binary.compiler.defines += ['META_NO_HL2SDK', 'SOURCEMOD_BUILD', 'VERSION_SAFE_STEAM_API_INTERFACES']
+
+# Let CI bake the generated release version into the binary. The value is passed
+# as an unquoted token and stringized in smsdk_config.h, avoiding shell-quoting
+# differences between MSVC and gcc/clang.
+if builder.options.version:
+  binary.compiler.defines += ['SMEXT_CONF_VERSION_OVERRIDE={0}'.format(builder.options.version)]
 binary.compiler.cxxincludes += [os.path.join(SteamWorks.steamworks_root, 'public', 'steam')]
 binary.compiler.cxxincludes += [os.path.join(SteamWorks.sm_root, 'public', 'safetyhook', 'include')]
 
