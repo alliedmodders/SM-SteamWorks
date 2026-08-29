@@ -19,31 +19,11 @@
 #include "gsnatives.h"
 #include "extension.h"
 #include "swgameserver.h"
-
-static bool IsSteamWorksLoaded(void)
-{
-	return (g_SteamWorks.pSWGameServer->GetSteamClient() != NULL);
-}
-
-static ISteamGameServer *GetGSPointer(void)
-{
-	return g_SteamWorks.pSWGameServer->GetGameServer();
-}
-
-static CSteamID CreateCommonCSteamID(IGamePlayer *pPlayer, const cell_t *params, unsigned char universeplace = 2, unsigned char typeplace = 3)
-{
-	return g_SteamWorks.CreateCommonCSteamID(pPlayer, params, universeplace, typeplace);
-}
-
-static CSteamID CreateCommonCSteamID(uint32_t authid, const cell_t *params, unsigned char universeplace = 2, unsigned char typeplace = 3)
-{
-	return g_SteamWorks.CreateCommonCSteamID(authid, params, universeplace, typeplace);
-}
+#include "steamworks_helpers.h"
 
 static cell_t sm_IsVACEnabled(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-	
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -54,8 +34,7 @@ static cell_t sm_IsVACEnabled(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_GetPublicIP(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-	
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -69,8 +48,12 @@ static cell_t sm_GetPublicIP(IPluginContext *pContext, const cell_t *params)
 
 	uint32_t ipaddr = sAddr.m_unIPv4;
 	
-	cell_t *addr;
-	pContext->LocalToPhysAddr(params[1], &addr);
+	cell_t* addr;
+	if (!GetCellPointer(pContext, params[1], addr))
+	{
+		return 0;
+	}
+
 	for (char iter = 3; iter > -1; --iter)
 	{
 		addr[(~iter) & 0x03] = (static_cast<unsigned char>(ipaddr >> (iter * 8)) & 0xFF); /* I hate you; SteamTools. */
@@ -81,8 +64,7 @@ static cell_t sm_GetPublicIP(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_GetPublicIPCell(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -99,61 +81,66 @@ static cell_t sm_GetPublicIPCell(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_IsLoaded(IPluginContext *pContext, const cell_t *params)
 {
-	return IsSteamWorksLoaded() ? 1 : 0;
+	return (g_SteamWorks.pSWGameServer->GetSteamClient() != NULL) ? 1 : 0;
 }
 
 static cell_t sm_SetGameData(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 	
-	char *pData;
-	pContext->LocalToString(params[1], &pData);
-	
+	char* pData;
+	if (!GetStringParam(pContext, params[1], pData, "Invalid or empty game data"))
+	{
+		return 0;
+	}
+
 	pServer->SetGameData(pData);
 	return 1;
 }
 
 static cell_t sm_SetGameDescription(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 	
-	char *pDesc;
-	pContext->LocalToString(params[1], &pDesc);
-	
+	char* pDesc;
+	if (!GetStringParam(pContext, params[1], pDesc, "Invalid or empty game description"))
+	{
+		return 0;
+	}
+
 	pServer->SetGameDescription(pDesc);
 	return 1;
 }
 
 static cell_t sm_SetMapName(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 	
-	char *pMapName;
-	pContext->LocalToString(params[1], &pMapName);
-	
+	char* pMapName;
+	if (!GetStringParam(pContext, params[1], pMapName, "Invalid or empty map name"))
+	{
+		return 0;
+	}
+
 	pServer->SetMapName(pMapName);
 	return 1;
 }
 
 static cell_t sm_IsConnected(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -164,16 +151,22 @@ static cell_t sm_IsConnected(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_SetRule(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 
-	char *pKey, *pValue;
-	pContext->LocalToString(params[1], &pKey);
-	pContext->LocalToString(params[2], &pValue);
+	char* pKey, *pValue;
+	if (!GetStringParam(pContext, params[1], pKey, "Invalid or empty rule key"))
+	{
+		return 0;
+	}
+
+	if (!GetStringParam(pContext, params[2], pValue, "Invalid or empty rule value"))
+	{
+		return 0;
+	}
 
 	pServer->SetKeyValue(pKey, pValue);
 	return 1;
@@ -181,8 +174,7 @@ static cell_t sm_SetRule(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_ClearRules(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -194,8 +186,7 @@ static cell_t sm_ClearRules(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_SetAdvertiseServerActive(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
@@ -214,60 +205,64 @@ static cell_t sm_ForceHeartbeat(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_UserHasLicenseForApp(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
-		return k_EUserHasLicenseResultNoAuth;
+		return 0;
 	}
 
-	int client = params[1];
-	if (client < 1 || client > playerhelpers->GetMaxClients())
+	IGamePlayer* pPlayer = GetValidGamePlayer(pContext, params[1]);
+	if (pPlayer == NULL)
 	{
-		return pContext->ThrowNativeError("Client index %d is invalid", client);
+		return 0;
 	}
 
-	IGamePlayer *pPlayer = playerhelpers->GetGamePlayer(client);
-	if (pPlayer == NULL || !pPlayer->IsConnected())
+	CSteamID steamId = GetSteamIdFromPlayer(pContext, pPlayer);
+	if (!steamId.IsValid())
 	{
-		return pContext->ThrowNativeError("Client index %d is not connected", client);
+		return 0;
 	}
-	
-	CSteamID checkid = CreateCommonCSteamID(pPlayer, params, 3, 4);
-	return pServer->UserHasLicenseForApp(checkid, params[2]);
+
+	return pServer->UserHasLicenseForApp(steamId, params[2]);
 }
 
 static cell_t sm_UserHasLicenseForAppId(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
-		return k_EUserHasLicenseResultNoAuth;
+		return 0;
 	}
 
-	CSteamID checkid = CreateCommonCSteamID(params[1], params, 3, 4);
-	return pServer->UserHasLicenseForApp(checkid, params[2]);
+	CSteamID steamId = GetAccountId(pContext, params[1]);
+	if (!steamId.IsValid())
+	{
+		return 0;
+	}
+
+	return pServer->UserHasLicenseForApp(steamId, params[2]);
 }
 
 static cell_t sm_GetClientSteamID(IPluginContext *pContext, const cell_t *params)
 {
-	int client = params[1];
-	if (client < 1 || client > playerhelpers->GetMaxClients())
+	IGamePlayer* pPlayer = GetValidGamePlayer(pContext, params[1]);
+	if (pPlayer == NULL)
 	{
-		return pContext->ThrowNativeError("Client index %d is invalid", client);
+		return 0;
 	}
 
-	IGamePlayer *pPlayer = playerhelpers->GetGamePlayer(client);
-	if (pPlayer == NULL || !pPlayer->IsConnected())
+	CSteamID steamId = GetSteamIdFromPlayer(pContext, pPlayer);
+	if (!steamId.IsValid())
 	{
-		return pContext->ThrowNativeError("Client index %d is not connected", client);
+		return 0;
 	}
 
-	CSteamID steamId = CreateCommonCSteamID(pPlayer, params, 4, 5);
-
-	char *steamIdBuffer;
-	pContext->LocalToString(params[2], &steamIdBuffer);
+	int bufferSize = params[3];
+	char* steamIdBuffer;
+	if (!GetBufferPointer(pContext, params[2], steamIdBuffer, bufferSize))
+	{
+		return 0;
+	}
 
 	int numBytes = g_pSM->Format(steamIdBuffer, params[3], "%llu", steamId.ConvertToUint64());
 	numBytes++; // account for null terminator
@@ -277,59 +272,80 @@ static cell_t sm_GetClientSteamID(IPluginContext *pContext, const cell_t *params
 
 static cell_t sm_GetUserGroupStatus(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 
-	int client = params[1];
-	if (client < 1 || client > playerhelpers->GetMaxClients())
+	IGamePlayer* pPlayer = GetValidGamePlayer(pContext, params[1]);
+	if (pPlayer == NULL)
 	{
-		return pContext->ThrowNativeError("Client index %d is invalid", client);
+		return 0;
 	}
 
-	IGamePlayer *pPlayer = playerhelpers->GetGamePlayer(client);
-	if (pPlayer == NULL || !pPlayer->IsConnected())
+	CSteamID steamId = GetSteamIdFromPlayer(pContext, pPlayer);
+	if (!steamId.IsValid())
 	{
-		return pContext->ThrowNativeError("Client index %d is not connected", client);
+		return 0;
 	}
 
-	CSteamID checkid = CreateCommonCSteamID(pPlayer, params, 3, 4);
-	return pServer->RequestUserGroupStatus(checkid, CSteamID(params[2], k_EUniversePublic, k_EAccountTypeClan));
+	CSteamID groupSteamId = GetAccountId(pContext, params[2], k_EAccountTypeClan);
+	if (!groupSteamId.IsValid())
+	{
+		return 0;
+	}
+
+	return pServer->RequestUserGroupStatus(steamId, groupSteamId);
 }
 
 static cell_t sm_GetUserGroupStatusAuthID(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
-
+	ISteamGameServer* pServer = GetGameServer(pContext);
 	if (pServer == NULL)
 	{
-		return false;
+		return 0;
 	}
 
-	CSteamID checkid = CreateCommonCSteamID(params[1], params, 3, 4);
-	return pServer->RequestUserGroupStatus(checkid, CSteamID(params[2], k_EUniversePublic, k_EAccountTypeClan));
+	CSteamID steamId = GetAccountId(pContext, params[1]);
+	if (!steamId.IsValid())
+	{
+		return 0;
+	}
+
+	CSteamID groupSteamId = GetAccountId(pContext, params[2], k_EAccountTypeClan);
+	if (!groupSteamId.IsValid())
+	{
+		return 0;
+	}
+
+	return pServer->RequestUserGroupStatus(steamId, groupSteamId);
 }
 
-static sp_nativeinfo_t gsnatives[] = {
-	{"SteamWorks_IsVACEnabled",				sm_IsVACEnabled},
-	{"SteamWorks_GetPublicIP",				sm_GetPublicIP},
-	{"SteamWorks_GetPublicIPCell",				sm_GetPublicIPCell},
-	{"SteamWorks_IsLoaded",				sm_IsLoaded},
-	{"SteamWorks_SetGameData",				sm_SetGameData},
-	{"SteamWorks_SetGameDescription",	sm_SetGameDescription},
-	{"SteamWorks_SetMapName",	sm_SetMapName},
-	{"SteamWorks_IsConnected",				sm_IsConnected},
-	{"SteamWorks_SetRule",						sm_SetRule},
+static cell_t sm_IsGameServerAvailable(IPluginContext* pContext, const cell_t* params)
+{
+	return (g_SteamWorks.pSWGameServer->GetGameServer() != NULL) ? 1 : 0;
+}
+
+static sp_nativeinfo_t gsnatives[] =
+{
+	{"SteamWorks_IsGameServerAvailable",			sm_IsGameServerAvailable},
+	{"SteamWorks_IsVACEnabled",						sm_IsVACEnabled},
+	{"SteamWorks_GetPublicIP",						sm_GetPublicIP},
+	{"SteamWorks_GetPublicIPCell",					sm_GetPublicIPCell},
+	{"SteamWorks_IsLoaded",							sm_IsLoaded},
+	{"SteamWorks_SetGameData",						sm_SetGameData},
+	{"SteamWorks_SetGameDescription",				sm_SetGameDescription},
+	{"SteamWorks_SetMapName",						sm_SetMapName},
+	{"SteamWorks_IsConnected",						sm_IsConnected},
+	{"SteamWorks_SetRule",							sm_SetRule},
 	{"SteamWorks_ClearRules",						sm_ClearRules},
-	{"SteamWorks_SetAdvertiseServerActive",	sm_SetAdvertiseServerActive},
-	{"SteamWorks_ForceHeartbeat",				sm_ForceHeartbeat},
-	{"SteamWorks_HasLicenseForApp",			sm_UserHasLicenseForApp},
-	{"SteamWorks_HasLicenseForAppId",			sm_UserHasLicenseForAppId},
-	{"SteamWorks_GetClientSteamID",			sm_GetClientSteamID},
-	{"SteamWorks_GetUserGroupStatus",			sm_GetUserGroupStatus},
+	{"SteamWorks_SetAdvertiseServerActive",			sm_SetAdvertiseServerActive},
+	{"SteamWorks_ForceHeartbeat",					sm_ForceHeartbeat},
+	{"SteamWorks_HasLicenseForApp",					sm_UserHasLicenseForApp},
+	{"SteamWorks_HasLicenseForAppId",				sm_UserHasLicenseForAppId},
+	{"SteamWorks_GetClientSteamID",					sm_GetClientSteamID},
+	{"SteamWorks_GetUserGroupStatus",				sm_GetUserGroupStatus},
 	{"SteamWorks_GetUserGroupStatusAuthID",			sm_GetUserGroupStatusAuthID},
 	{NULL,											NULL}
 };

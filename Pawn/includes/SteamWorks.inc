@@ -374,21 +374,21 @@ native bool SteamWorks_ForceHeartbeat();
  * The result is delivered through the SteamWorks_OnClientGroupStatus forward.
  *
  * @param client        Client index.
- * @param groupid       32-bit account ID of the Steam group.
+ * @param steamGroupId  32-bit account ID of the Steam group.
  * @return              True if the request was sent, false if not connected to Steam.
  * @error               Invalid client index.
  */
-native bool SteamWorks_GetUserGroupStatus(int client, int groupid);
+native bool SteamWorks_GetUserGroupStatus(int client, int steamGroupId);
 
 /**
  * Asynchronously requests whether a user is a member of a given Steam group.
  * The result is delivered through the SteamWorks_OnClientGroupStatus forward.
  *
- * @param authid        32-bit account ID of the user to query.
- * @param groupid       32-bit account ID of the Steam group.
- * @return              True if the request was sent, false if not connected to Steam.
+ * @param accountId       32-bit account ID of the user to query.
+ * @param steamGroupId   32-bit account ID of the Steam group.
+ * @return               True if the request was sent, false if not connected to Steam.
  */
-native bool SteamWorks_GetUserGroupStatusAuthID(int authid, int groupid);
+native bool SteamWorks_GetUserGroupStatusAuthID(int accountId, int steamGroupId);
 
 /**
  * Returns whether a client owns/has a license for the given application.
@@ -404,12 +404,12 @@ native EUserHasLicenseForAppResult SteamWorks_HasLicenseForApp(int client, int a
 /**
  * Returns whether a user owns/has a license for the given application.
  *
- * @param authid        32-bit account ID of the user to check.
+ * @param accountId     32-bit account ID of the user to check.
  * @param app           Application (AppID) to check ownership of.
  * @return              An EUserHasLicenseForAppResult value; k_EUserHasLicenseResultNoAuth
  *                      if not connected to Steam.
  */
-native EUserHasLicenseForAppResult SteamWorks_HasLicenseForAppId(int authid, int app);
+native EUserHasLicenseForAppResult SteamWorks_HasLicenseForAppId(int accountId, int app);
 
 /**
  * Retrieves a client's 64-bit Steam ID (community ID) as a string.
@@ -426,22 +426,20 @@ native int SteamWorks_GetClientSteamID(int client, char[] sSteamID, int length);
  * Asynchronously requests the stats of a user from Steam. Stats become available
  * afterwards through SteamWorks_GetStatAuthIDCell / SteamWorks_GetStatAuthIDFloat.
  *
- * @param authid        32-bit account ID of the user whose stats to request.
- * @param appid         Application (AppID) to request stats for.
+ * @param accountId     32-bit account ID of the user whose stats to request.
  * @return              True if the request was sent, false if not connected to Steam.
  */
-native bool SteamWorks_RequestStatsAuthID(int authid, int appid);
+native bool SteamWorks_RequestStatsAuthID(int accountId);
 
 /**
  * Asynchronously requests the stats of a client from Steam. Stats become available
  * afterwards through SteamWorks_GetStatCell / SteamWorks_GetStatFloat.
  *
  * @param client        Client index.
- * @param appid         Application (AppID) to request stats for.
  * @return              True if the request was sent, false if not connected to Steam.
  * @error               Invalid client index.
  */
-native bool SteamWorks_RequestStats(int client, int appid);
+native bool SteamWorks_RequestStats(int client);
 
 /**
  * Retrieves an integer stat for a client. The client's stats must have been
@@ -459,12 +457,12 @@ native bool SteamWorks_GetStatCell(int client, const char[] sKey, int &value);
  * Retrieves an integer stat for a user. The user's stats must have been
  * requested first with SteamWorks_RequestStatsAuthID.
  *
- * @param authid        32-bit account ID of the user.
+ * @param accountId     32-bit account ID of the user.
  * @param sKey          Stat name.
  * @param value         Variable to store the stat value in.
  * @return              True on success, false on failure or if not connected to Steam.
  */
-native bool SteamWorks_GetStatAuthIDCell(int authid, const char[] sKey, int &value);
+native bool SteamWorks_GetStatAuthIDCell(int accountId, const char[] sKey, int &value);
 
 /**
  * Retrieves a floating-point stat for a client. The client's stats must have been
@@ -482,12 +480,12 @@ native bool SteamWorks_GetStatFloat(int client, const char[] sKey, float &value)
  * Retrieves a floating-point stat for a user. The user's stats must have been
  * requested first with SteamWorks_RequestStatsAuthID.
  *
- * @param authid        32-bit account ID of the user.
+ * @param accountId     32-bit account ID of the user.
  * @param sKey          Stat name.
  * @param value         Variable to store the stat value in.
  * @return              True on success, false on failure or if not connected to Steam.
  */
-native bool SteamWorks_GetStatAuthIDFloat(int authid, const char[] sKey, float &value);
+native bool SteamWorks_GetStatAuthIDFloat(int accountId, const char[] sKey, float &value);
 
 /**
  * Creates a new HTTP request. The URL must be absolute and start with http:// or https://.
@@ -833,6 +831,26 @@ native bool SteamWorks_GetHTTPResponseBodyCallback(Handle hRequest, SteamWorksHT
 native bool SteamWorks_WriteHTTPResponseBodyToFile(Handle hRequest, const char[] sFileName);
 
 /**
+ * Checks whether the ISteamGameServerStats interface is available.
+ *
+ * This allows plugins to avoid calling stat functions when the interface is
+ * not ready, preventing native errors and allowing graceful fallback.
+ *
+ * @return              True if the stats interface is available, false otherwise.
+ */
+native bool SteamWorks_IsStatsAvailable();
+
+/**
+ * Checks whether the ISteamGameServer interface is available.
+ *
+ * This allows plugins to avoid calling game server functions when the interface
+ * is not ready, preventing native errors and allowing graceful fallback.
+ *
+ * @return              True if the game server interface is available, false otherwise.
+ */
+native bool SteamWorks_IsGameServerAvailable();
+
+/**
  * Sends a message to the Game Coordinator.
  *
  * @param unMsgType     Message type.
@@ -1095,19 +1113,19 @@ methodmap SteamWorksHTTPRequest < Handle
  * Deprecated alias for SteamWorks_OnValidateClient, kept for backwards compatibility.
  * Use SteamWorks_OnValidateClient in new code.
  *
- * @param ownerauthid   32-bit account ID of the account that owns the game license.
- * @param authid        32-bit account ID of the validated client.
+ * @param ownerAccountId  32-bit account ID of the account that owns the game license.
+ * @param accountId       32-bit account ID of the validated client.
  */
-forward void SW_OnValidateClient(int ownerauthid, int authid);
+forward void SW_OnValidateClient(int ownerAccountId, int accountId);
 
 /**
  * Called when a client has been validated by Steam. For clients playing on a borrowed
  * (Family Sharing) license, the owner and client account IDs differ.
  *
- * @param ownerauthid   32-bit account ID of the account that owns the game license.
- * @param authid        32-bit account ID of the validated client.
+ * @param ownerAccountId   32-bit account ID of the account that owns the game license.
+ * @param accountId        32-bit account ID of the validated client.
  */
-forward void SteamWorks_OnValidateClient(int ownerauthid, int authid);
+forward void SteamWorks_OnValidateClient(int ownerAccountId, int accountId);
 
 /**
  * Called when the server successfully connects (logs on) to Steam.
@@ -1150,12 +1168,12 @@ forward void SteamWorks_TokenRequested(char[] sToken, int maxlen);
  * Called with the result of a SteamWorks_GetUserGroupStatus /
  * SteamWorks_GetUserGroupStatusAuthID request.
  *
- * @param authid        32-bit account ID of the user.
- * @param groupid       32-bit account ID of the group.
+ * @param accountId     32-bit account ID of the user.
+ * @param steamGroupId  32-bit account ID of the group.
  * @param isMember      True if the user is a member of the group.
  * @param isOfficer     True if the user is an officer of the group.
  */
-forward void SteamWorks_OnClientGroupStatus(int authid, int groupid, bool isMember, bool isOfficer);
+forward void SteamWorks_OnClientGroupStatus(int accountId, int steamGroupId, bool isMember, bool isOfficer);
 
 /**
  * Called when the game code sends a message to the Game Coordinator, letting a plugin
@@ -1260,6 +1278,8 @@ public void __ext_SteamWorks_SetNTVOptional()
 	MarkNativeAsOptional("SteamWorks_GetStatAuthIDFloat");
 
 	MarkNativeAsOptional("SteamWorks_SendMessageToGC");
+	MarkNativeAsOptional("SteamWorks_IsStatsAvailable");
+	MarkNativeAsOptional("SteamWorks_IsGameServerAvailable");
 
 	MarkNativeAsOptional("SteamWorks_CreateHTTPRequest");
 	MarkNativeAsOptional("SteamWorks_SetHTTPRequestContextValue");
