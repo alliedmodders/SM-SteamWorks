@@ -26,7 +26,10 @@ SteamWorksForwards::SteamWorksForwards() :
 		m_CallbackSteamConnected(this, &SteamWorksForwards::OnSteamServersConnected),
 		m_CallbackSteamConnectFailure(this, &SteamWorksForwards::OnSteamServersConnectFailure),
 		m_CallbackSteamDisconnected(this, &SteamWorksForwards::OnSteamServersDisconnected),
-		m_CallbackGroupStatus(this, &SteamWorksForwards::OnGroupStatusResult)
+		m_CallbackGroupStatus(this, &SteamWorksForwards::OnGroupStatusResult),
+		m_CallbackUserStatsReceived(this, &SteamWorksForwards::OnUserStatsReceived),
+		m_CallbackUserStatsUnloaded(this, &SteamWorksForwards::OnUserStatsUnloaded),
+		m_CallbackUserStatsStored(this, &SteamWorksForwards::OnUserStatsStored)
 {
 	this->pFOVC_Old = forwards->CreateForward("SW_OnValidateClient", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
 	this->pFOVC = forwards->CreateForward("SteamWorks_OnValidateClient", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
@@ -34,6 +37,10 @@ SteamWorksForwards::SteamWorksForwards() :
 	this->pFOSSCF = forwards->CreateForward("SteamWorks_SteamServersConnectFailure", ET_Ignore, 1, NULL, Param_Cell);
 	this->pFOSSD = forwards->CreateForward("SteamWorks_SteamServersDisconnected", ET_Ignore, 1, NULL, Param_Cell);
 	this->pFOCGS = forwards->CreateForward("SteamWorks_OnClientGroupStatus", ET_Ignore, 4, NULL, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+
+	this->pFUserStatsReceived = forwards->CreateForward("SteamWorks_OnUserStatsReceived", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
+	this->pFUserStatsUnloaded = forwards->CreateForward("SteamWorks_OnUserStatsUnloaded", ET_Ignore, 1, NULL, Param_Cell);
+	this->pFUserStatsStored = forwards->CreateForward("SteamWorks_OnUserStatsStored", ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
 }
 
 SteamWorksForwards::~SteamWorksForwards()
@@ -44,6 +51,10 @@ SteamWorksForwards::~SteamWorksForwards()
 	forwards->ReleaseForward(this->pFOSSCF);
 	forwards->ReleaseForward(this->pFOSSD);
 	forwards->ReleaseForward(this->pFOCGS);
+
+	forwards->ReleaseForward(this->pFUserStatsReceived);
+	forwards->ReleaseForward(this->pFUserStatsUnloaded);
+	forwards->ReleaseForward(this->pFUserStatsStored);
 }
 
 void SteamWorksForwards::NotifyPawnValidateClient(Account_t parent, Account_t child)
@@ -117,4 +128,37 @@ void SteamWorksForwards::OnGroupStatusResult(GSClientGroupStatus_t *pResponse)
 	this->pFOCGS->PushCell(pResponse->m_bMember);
 	this->pFOCGS->PushCell(pResponse->m_bOfficer);
 	this->pFOCGS->Execute(NULL);
+}
+
+void SteamWorksForwards::OnUserStatsReceived(GSStatsReceived_t* pCallback)
+{
+	if (this->pFUserStatsReceived->GetFunctionCount() == 0)
+	{
+		return;
+	}
+
+	this->pFUserStatsReceived->PushCell(pCallback->m_steamIDUser.GetAccountID());
+	this->pFUserStatsReceived->PushCell(pCallback->m_eResult);
+	this->pFUserStatsReceived->Execute(NULL);
+}
+
+void SteamWorksForwards::OnUserStatsUnloaded(GSStatsUnloaded_t* pCallback)
+{
+	if (this->pFUserStatsUnloaded->GetFunctionCount() == 0)
+	{
+		return;
+	}
+
+	this->pFUserStatsUnloaded->PushCell(pCallback->m_steamIDUser.GetAccountID());
+	this->pFUserStatsUnloaded->Execute(NULL);
+}
+
+void SteamWorksForwards::OnUserStatsStored(GSStatsStored_t* pCallback)
+{
+	if (this->pFUserStatsStored->GetFunctionCount() == 0)
+		return;
+
+	this->pFUserStatsStored->PushCell(pCallback->m_steamIDUser.GetAccountID());
+	this->pFUserStatsStored->PushCell(pCallback->m_eResult);
+	this->pFUserStatsStored->Execute(NULL);
 }

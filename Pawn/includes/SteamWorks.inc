@@ -3,6 +3,8 @@
 #endif
 #define _SteamWorks_Included
 
+/* Constants */
+
 /* results from UserHasLicenseForApp */
 enum EUserHasLicenseForAppResult
 {
@@ -245,6 +247,18 @@ enum EHTTPStatusCode
 	k_EHTTPStatusCode5xxUnknown =				599,
 };
 
+/* list of possible return values from the ISteamGameCoordinator API */
+enum EGCResults
+{
+	k_EGCResultOK = 0,
+	k_EGCResultNoMessage = 1,			// There is no message in the queue
+	k_EGCResultBufferTooSmall = 2,		// The buffer is too small for the requested message
+	k_EGCResultNotLoggedOn = 3,			// The client is not logged onto Steam
+	k_EGCResultInvalidMessage = 4,		// Something was wrong with the message being sent with SendMessage
+};
+
+/* Natives */
+
 /**
  * Returns whether an HTTP status code represents success (a 2xx code).
  *
@@ -255,16 +269,6 @@ stock bool IsHTTPStatusSuccess(EHTTPStatusCode eStatusCode)
 {
 	return (eStatusCode >= k_EHTTPStatusCode200OK && eStatusCode < k_EHTTPStatusCode300MultipleChoices);
 }
-
-/* list of possible return values from the ISteamGameCoordinator API */
-enum EGCResults
-{
-	k_EGCResultOK = 0,
-	k_EGCResultNoMessage = 1,			// There is no message in the queue
-	k_EGCResultBufferTooSmall = 2,		// The buffer is too small for the requested message
-	k_EGCResultNotLoggedOn = 3,			// The client is not logged onto Steam
-	k_EGCResultInvalidMessage = 4,		// Something was wrong with the message being sent with SendMessage
-};
 
 /**
  * Returns whether the server is VAC (Valve Anti-Cheat) secured.
@@ -846,6 +850,16 @@ native bool SteamWorks_IsStatsAvailable();
  */
 native bool SteamWorks_IsGameServerAvailable();
 
+/**
+ * Sends a message to the Game Coordinator.
+ *
+ * @param unMsgType     Message type.
+ * @param pubData       Message payload.
+ * @param cubData       Size of the payload, in bytes.
+ * @return              An EGCResults value; k_EGCResultNotLoggedOn if not connected to Steam.
+ */
+native EGCResults SteamWorks_SendMessageToGC(int unMsgType, const char[] pubData, int cubData);
+
 methodmap SteamWorksHTTPRequest < Handle
 {
 	/**
@@ -1093,6 +1107,8 @@ methodmap SteamWorksHTTPRequest < Handle
 	public native bool WriteResponseBodyToFile(const char[] sFileName);
 };
 
+/* Forwards */
+
 /**
  * Deprecated alias for SteamWorks_OnValidateClient, kept for backwards compatibility.
  * Use SteamWorks_OnValidateClient in new code.
@@ -1192,14 +1208,30 @@ forward void SteamWorks_GCMsgAvailable(int cubData);
 forward EGCResults SteamWorks_GCRetrieveMessage(int punMsgType, const char[] pubDest, int cubDest, int pcubMsgSize);
 
 /**
- * Sends a message to the Game Coordinator.
+ * Called when a user's stats have been received in response to
+ * SteamWorks_RequestStats or SteamWorks_RequestStatsAuthID.
  *
- * @param unMsgType     Message type.
- * @param pubData       Message payload.
- * @param cubData       Size of the payload, in bytes.
- * @return              An EGCResults value; k_EGCResultNotLoggedOn if not connected to Steam.
+ * @param authid    32-bit account ID of the user whose stats were requested.
+ * @param result       EResult code; k_EResultOK (1) indicates success.
+ * @param gameid        Game ID (AppID) of the game the stats were requested for.
  */
-native EGCResults SteamWorks_SendMessageToGC(int unMsgType, const char[] pubData, int cubData);
+forward void SteamWorks_OnUserStatsReceived(int authid, EResult result, int gameid);
+
+/**
+ * Called when Steam unloads user stats from the cache.
+ * After this, stats for this user are no longer available until RequestStats is called again.
+ *
+ * @param authid        32-bit account ID of the user.
+ */
+forward void SteamWorks_OnUserStatsUnloaded(int authid);
+
+/**
+ * Called when a request to store user stats has completed.
+ *
+ * @param authid        32-bit account ID of the user.
+ * @param result        EResult code; k_EResultOK (1) indicates success.
+ */
+forward void SteamWorks_OnUserStatsStored(int authid, EResult result);
 
 public Extension __ext_SteamWorks =
 {
