@@ -25,7 +25,7 @@ namespace SourceMod
 	class IForward;
 }
 
-typedef uint32_t Account_t;
+typedef uint32 Account_t;
 
 class SteamWorksForwards
 {

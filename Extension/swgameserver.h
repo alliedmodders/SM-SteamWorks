@@ -18,9 +18,10 @@
 
 #pragma once
 
-#include <steam_api_common.h>
+#include <steam_api.h>
 
 class ISteamGameCoordinator;
+class ISteamGameServer014;
 
 #if defined(STEAM_API_INTERNAL_H) || !defined(STEAM_API_EXPORTS)
 	S_API ISteamClient *g_pSteamClientGameServer; /* This is awful. */
@@ -35,6 +36,7 @@ class SteamWorksGameServer
 	public:
 		ISteamClient *GetSteamClient(void);
 		ISteamGameServer *GetGameServer(void);
+		ISteamGameServer014 *GetGameServer014(void);
 		ISteamUtils *GetUtils(void);
 		ISteamNetworking *GetNetworking(void);
 		ISteamGameServerStats *GetServerStats(void);
@@ -50,6 +52,7 @@ class SteamWorksGameServer
 	private:
 		ISteamClient *m_pClient;
 		ISteamGameServer *m_pGameServer;
+		ISteamGameServer014 *m_pGameServer014;
 		ISteamUtils *m_pUtils;
 		ISteamNetworking *m_pNetworking;
 		ISteamGameServerStats *m_pStats;

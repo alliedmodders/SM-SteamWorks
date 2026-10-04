@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <isteamclient.h>
 #include <isteamgamecoordinator.h>
 #include <cstdint>
 

@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  # Steamworks SDK 1.32
+  STEAMWORKS_SDK_COMMIT: 3aa76d12fa787eec528e404fb7d9268bb02eaf28
+
 jobs:
   version:
     name: Version
@@ -82,6 +86,9 @@ jobs:
         run: |
           git config --global --add safe.directory '*'
           git clone --depth 1 --recurse-submodules -j8 --shallow-submodules https://github.com/rlabrecque/SteamworksSDK.git SteamworksSDK
+          git -C SteamworksSDK fetch --depth 1 origin "${STEAMWORKS_SDK_COMMIT}"
+          git -C SteamworksSDK checkout --detach "${STEAMWORKS_SDK_COMMIT}"
+          git -C SteamworksSDK submodule update --init --recursive
           git clone --depth 1 --recurse-submodules -j8 --shallow-submodules -b 1.12-dev https://github.com/alliedmodders/metamod-source.git mmsource
           git clone --depth 1 --recurse-submodules -j8 --shallow-submodules -b ${{ matrix.sm.branch }} https://github.com/alliedmodders/sourcemod.git sourcemod
 

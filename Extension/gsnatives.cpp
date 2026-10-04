@@ -19,6 +19,7 @@
 #include "gsnatives.h"
 #include "extension.h"
 #include "swgameserver.h"
+#include "sdk/isteamgameserver014.h"
 
 static bool IsSteamWorksLoaded(void)
 {
@@ -61,13 +62,11 @@ static cell_t sm_GetPublicIP(IPluginContext *pContext, const cell_t *params)
 		return 0;
 	}
 
-	SteamIPAddress_t sAddr = pServer->GetPublicIP();
-	if (!sAddr.IsSet())
+	uint32_t ipaddr = pServer->GetPublicIP();
+	if (ipaddr == 0)
 	{
 		return 0;
 	}
-
-	uint32_t ipaddr = sAddr.m_unIPv4;
 	
 	cell_t *addr;
 	pContext->LocalToPhysAddr(params[1], &addr);
@@ -88,13 +87,13 @@ static cell_t sm_GetPublicIPCell(IPluginContext *pContext, const cell_t *params)
 		return 0;
 	}
 
-	SteamIPAddress_t sAddr = pServer->GetPublicIP();
-	if (!sAddr.IsSet())
+	uint32_t ipaddr = pServer->GetPublicIP();
+	if (ipaddr == 0)
 	{
 		return 0;
 	}
 
-	return sAddr.m_unIPv4;
+	return ipaddr;
 }
 
 static cell_t sm_IsLoaded(IPluginContext *pContext, const cell_t *params)
@@ -194,14 +193,20 @@ static cell_t sm_ClearRules(IPluginContext *pContext, const cell_t *params)
 
 static cell_t sm_SetAdvertiseServerActive(IPluginContext *pContext, const cell_t *params)
 {
-	ISteamGameServer *pServer = GetGSPointer();
+	ISteamGameServer014 *pServer014 = g_SteamWorks.pSWGameServer->GetGameServer014();
+	if (pServer014 != NULL)
+	{
+		pServer014->SetAdvertiseServerActive(!!params[1]);
+		return 1;
+	}
 
+	ISteamGameServer *pServer = GetGSPointer();
 	if (pServer == NULL)
 	{
 		return 0;
 	}
 
-	pServer->SetAdvertiseServerActive(!!params[1]);
+	pServer->EnableHeartbeats(!!params[1]);
 	return 1;
 }
 

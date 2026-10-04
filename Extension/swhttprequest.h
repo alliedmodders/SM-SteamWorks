@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <steam_api.h>
 #include <isteamhttp.h>
 #include <smsdk_ext.h> // HTTPRequestHandle, Handle_t, IChangeableForward
 
