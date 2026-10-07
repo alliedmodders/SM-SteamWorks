@@ -83,14 +83,23 @@ SteamWorksHTTPRequest::~SteamWorksHTTPRequest()
 		this->request = INVALID_HTTPREQUEST_HANDLE;
 	}
 
-	forwards->ReleaseForward(this->pCompletedForward);
-	this->pCompletedForward = NULL;
+	if (this->pCompletedForward != NULL)
+	{
+		forwards->ReleaseForward(this->pCompletedForward);
+		this->pCompletedForward = NULL;
+	}
 
-	forwards->ReleaseForward(this->pHeadersReceivedForward);
-	this->pHeadersReceivedForward = NULL;
+	if (this->pHeadersReceivedForward != NULL)
+	{
+		forwards->ReleaseForward(this->pHeadersReceivedForward);
+		this->pHeadersReceivedForward = NULL;
+	}
 
-	forwards->ReleaseForward(this->pDataReceivedForward);
-	this->pDataReceivedForward = NULL;
+	if (this->pDataReceivedForward != NULL)
+	{
+		forwards->ReleaseForward(this->pDataReceivedForward);
+		this->pDataReceivedForward = NULL;
+	}
 }
 
 /* We pay the Iron Price. */
