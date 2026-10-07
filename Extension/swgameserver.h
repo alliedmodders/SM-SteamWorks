@@ -22,6 +22,7 @@
 
 class ISteamGameCoordinator;
 class ISteamGameServer014;
+class ISteamNetworkingSockets012;
 
 #if defined(STEAM_API_INTERNAL_H) || !defined(STEAM_API_EXPORTS)
 	S_API ISteamClient *g_pSteamClientGameServer; /* This is awful. */
@@ -37,6 +38,7 @@ class SteamWorksGameServer
 		ISteamClient *GetSteamClient(void);
 		ISteamGameServer *GetGameServer(void);
 		ISteamGameServer014 *GetGameServer014(void);
+		ISteamNetworkingSockets012 *GetNetworkingSockets012(void);
 		ISteamUtils *GetUtils(void);
 		ISteamNetworking *GetNetworking(void);
 		ISteamGameServerStats *GetServerStats(void);
@@ -53,6 +55,7 @@ class SteamWorksGameServer
 		ISteamClient *m_pClient;
 		ISteamGameServer *m_pGameServer;
 		ISteamGameServer014 *m_pGameServer014;
+		ISteamNetworkingSockets012 *m_pNetworkingSockets012;
 		ISteamUtils *m_pUtils;
 		ISteamNetworking *m_pNetworking;
 		ISteamGameServerStats *m_pStats;

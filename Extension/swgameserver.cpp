@@ -33,6 +33,7 @@
 #include <isteamgamecoordinator.h>
 
 #include "sdk/isteamgameserver014.h"
+#include "sdk/isteamnetworkingsockets012.h"
 
 static void GetGameSpecificConfigInterface(const char *pName, const char *&pVersion)
 {
@@ -68,6 +69,7 @@ void SteamWorksGameServer::Reset(void)
 	this->m_pClient = NULL;
 	this->m_pGameServer = NULL;
 	this->m_pGameServer014 = NULL;
+	this->m_pNetworkingSockets012 = NULL;
 	this->m_pUtils = NULL;
 	this->m_pNetworking = NULL;
 	this->m_pStats = NULL;
@@ -162,6 +164,23 @@ ISteamGameServer014 *SteamWorksGameServer::GetGameServer014(void)
 	}
 
 	return this->m_pGameServer014;
+}
+
+ISteamNetworkingSockets012 *SteamWorksGameServer::GetNetworkingSockets012(void)
+{
+	if (this->m_pNetworkingSockets012 == NULL && this->GetSteamClient() != NULL)
+	{
+		HSteamUser hSteamUser;
+		HSteamPipe hSteamPipe;
+		GetUserAndPipe(hSteamUser, hSteamPipe);
+
+		/* Steamworks SDK 1.32 does not declare this interface; NULL if steamclient lacks it. */
+		this->m_pNetworkingSockets012 = static_cast<ISteamNetworkingSockets012 *>(
+			this->GetSteamClient()->GetISteamGenericInterface(hSteamUser, hSteamPipe,
+				STEAMNETWORKINGSOCKETS012_INTERFACE_VERSION));
+	}
+
+	return this->m_pNetworkingSockets012;
 }
 
 ISteamUtils *SteamWorksGameServer::GetUtils(void)
