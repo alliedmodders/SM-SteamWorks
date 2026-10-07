@@ -270,10 +270,12 @@ const char *SteamWorksGameServer::GetLibraryPath(void)
 
 	if (pLibSteamPath == NULL)
 	{
+		const bool is64Bit = (sizeof(void *) == 8);
 #if defined POSIX
-		pLibSteamPath = "./bin/libsteam_api.so";
+		pLibSteamPath = is64Bit ? "./bin/linux64/libsteam_api.so" : "./bin/libsteam_api.so";
 #elif defined WIN32_LEAN_AND_MEAN
-		pLibSteamPath = "./bin/steam_api.dll"; /* Naming from SteamTools. */
+		/* 32-bit naming from SteamTools. */
+		pLibSteamPath = is64Bit ? "./bin/x64/steam_api64.dll" : "./bin/steam_api.dll";
 #endif
 
 		if (g_SteamWorks.pSWGameData)
